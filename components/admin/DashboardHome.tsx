@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import type { Order } from './OrdersManager'; // Use a shared type
 
@@ -18,6 +17,7 @@ const DashboardHome: React.FC = () => {
         totalRevenue: 0,
         totalOrders: 0,
         averageOrderValue: 0,
+        newOrders: 0,
     });
 
     useEffect(() => {
@@ -27,18 +27,25 @@ const DashboardHome: React.FC = () => {
         const validOrdersCount = orders.filter(o => o.status !== 'ملغى').length;
         const totalOrders = orders.length;
         const averageOrderValue = validOrdersCount > 0 ? totalRevenue / validOrdersCount : 0;
+        const newOrders = orders.filter(order => order.status === 'جديد').length;
 
         setStats({
             totalRevenue,
             totalOrders,
             averageOrderValue,
+            newOrders,
         });
     }, []);
 
     return (
         <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">نظرة عامة</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard 
+                    title="طلبات جديدة" 
+                    value={stats.newOrders.toString()} 
+                    icon="🔔"
+                />
                 <StatCard 
                     title="إجمالي الإيرادات" 
                     value={`${stats.totalRevenue.toFixed(0)} دج`} 
