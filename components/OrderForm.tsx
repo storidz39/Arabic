@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
-import type { Offer } from './LandingPage';
+import type { Offer } from '../context/SiteContext';
+import { wilayas, baladiyats } from '../data/locations';
 
 interface OrderFormProps {
     selectedOffer: Offer;
@@ -8,10 +10,17 @@ interface OrderFormProps {
 const OrderForm: React.FC<OrderFormProps> = ({ selectedOffer }) => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [wilaya, setWilaya] = useState('');
+  const [selectedWilaya, setSelectedWilaya] = useState('');
+  const [selectedBaladiya, setSelectedBaladiya] = useState('');
+  
   const deliveryCost = 0; // Free delivery
   const total = selectedOffer.price + deliveryCost;
 
+  const handleWilayaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedWilaya(e.target.value);
+    setSelectedBaladiya(''); // Reset baladiya on wilaya change
+  };
+  
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -21,7 +30,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ selectedOffer }) => {
       status: 'جديد',
       fullName,
       phone,
-      wilaya,
+      wilaya: selectedWilaya,
+      baladiya: selectedBaladiya,
       offer: {
         name: selectedOffer.name,
         items: selectedOffer.items,
@@ -32,7 +42,6 @@ const OrderForm: React.FC<OrderFormProps> = ({ selectedOffer }) => {
 
     try {
       const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-      // Add the new order to the beginning of the array
       const updatedOrders = [newOrder, ...existingOrders]; 
       localStorage.setItem('orders', JSON.stringify(updatedOrders));
       
@@ -40,7 +49,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ selectedOffer }) => {
       
       setFullName('');
       setPhone('');
-      setWilaya('');
+      setSelectedWilaya('');
+      setSelectedBaladiya('');
 
     } catch (error) {
       console.error("Failed to save order:", error);
@@ -55,29 +65,42 @@ const OrderForm: React.FC<OrderFormProps> = ({ selectedOffer }) => {
             <h2 className="text-2xl font-bold text-gray-800 mb-4">املأ الإستمارة لإتمام الطلب 📝</h2>
             <form onSubmit={handleSubmit} className="space-y-4 text-right">
                 <input 
-                type="text" 
-                placeholder="الاسم الكامل" 
-                className="w-full border-2 border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-red-300 focus:outline-none transition"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required 
+                  type="text" 
+                  placeholder="الاسم الكامل" 
+                  className="w-full border-2 border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-red-300 focus:outline-none transition"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required 
                 />
                 <input 
-                type="tel" 
-                placeholder="رقم الهاتف" 
-                className="w-full border-2 border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-red-300 focus:outline-none transition"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                required
+                  type="tel" 
+                  placeholder="رقم الهاتف" 
+                  className="w-full border-2 border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-red-300 focus:outline-none transition"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
                 />
-                <input 
-                type="text" 
-                placeholder="الولاية" 
-                className="w-full border-2 border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-red-300 focus:outline-none transition"
-                value={wilaya}
-                onChange={(e) => setWilaya(e.target.value)}
-                required
-                />
+                
+                <select
+                  value={selectedWilaya}
+                  onChange={handleWilayaChange}
+                  className="w-full border-2 border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-red-300 focus:outline-none transition"
+                  required
+                >
+                  <option value="" disabled>-- اختر الولاية --</option>
+                  {wilayas.map(w => <option key={w.code} value={w.name}>{w.name}</option>)}
+                </select>
+
+                <select
+                  value={selectedBaladiya}
+                  onChange={(e) => setSelectedBaladiya(e.target.value)}
+                  className="w-full border-2 border-gray-200 p-3 rounded-lg focus:ring-2 focus:ring-red-300 focus:outline-none transition"
+                  required
+                  disabled={!selectedWilaya}
+                >
+                  <option value="" disabled>-- اختر البلدية --</option>
+                  {selectedWilaya && baladiyats[wilayas.find(w => w.name === selectedWilaya)?.code || 0]?.map(b => <option key={b} value={b}>{b}</option>)}
+                </select>
 
                 <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-2">
                     <h3 className="font-bold text-lg mb-2">ملخص الطلب</h3>

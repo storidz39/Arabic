@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useContext } from 'react';
 import TopBar from './TopBar';
 import HeroSection from './HeroSection';
 import ProductDescription from './ProductDescription';
@@ -7,22 +8,13 @@ import Testimonials from './Testimonials';
 import FAQ from './FAQ';
 import Offers from './Offers';
 import OrderForm from './OrderForm';
-
-export interface Offer {
-  id: number;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  items: number;
-  mostPopular: boolean;
-  bestValue?: boolean;
-}
+import { SiteContext, Offer } from '../context/SiteContext';
 
 const Footer: React.FC = () => {
     return (
-        <footer className="bg-gray-800 text-white text-center p-4">
+        <footer className="bg-gray-800 text-white text-center p-4 mt-8">
             <div className="container mx-auto">
-                <p>&copy; {new Date().getFullYear()} قصص بطلي. جميع الحقوق محفوظة.</p>
+                <p>&copy; {new Date().getFullYear()} جميع الحقوق محفوظة.</p>
                 <a href="#/admin/login" className="text-sm text-gray-400 hover:text-white mt-2 inline-block">
                     دخول المشرف
                 </a>
@@ -33,24 +25,42 @@ const Footer: React.FC = () => {
 
 
 const LandingPage: React.FC = () => {
-    const offers: Offer[] = [
-      { id: 1, name: 'الأكثر طلبا', price: 1490, items: 1, mostPopular: true },
-      { id: 2, name: 'المتوسط طلبا', price: 2490, items: 2, mostPopular: false, bestValue: true },
-      { id: 3, name: 'الأكبر حجما', price: 3490, items: 3, mostPopular: false },
-    ];
-    const [selectedOffer, setSelectedOffer] = useState<Offer>(offers[0]);
+    const context = useContext(SiteContext);
 
+    if (!context) {
+        return <div>Loading...</div>; // Or some other loading state
+    }
+    
+    const { siteData, offers } = context;
+    
+    // Initialize selectedOffer with the first offer, or a default if none exist
+    const [selectedOffer, setSelectedOffer] = useState<Offer>(offers.find(o => o.mostPopular) || offers[0] || {
+        id: 0, name: 'No Offer', price: 0, items: 0, mostPopular: false, imageUrl: ''
+    });
+
+    // Ensure selectedOffer is always valid
+    React.useEffect(() => {
+        const popularOffer = offers.find(o => o.mostPopular) || offers[0];
+        if (popularOffer) {
+            setSelectedOffer(popularOffer);
+        }
+    }, [offers]);
 
   return (
     <div>
       <TopBar />
       <main>
-        <HeroSection />
-        <ProductDescription />
-        <HowToOrder />
-        <Testimonials />
-        <FAQ />
-        <Offers offers={offers} selectedOffer={selectedOffer} setSelectedOffer={setSelectedOffer} />
+        <HeroSection content={siteData.hero} />
+        <ProductDescription content={siteData.productDescription} />
+        <HowToOrder content={siteData.howToOrder} />
+        <Testimonials content={siteData.testimonials}/>
+        <FAQ content={siteData.faq} />
+        <Offers 
+            offers={offers} 
+            selectedOffer={selectedOffer} 
+            setSelectedOffer={setSelectedOffer}
+            content={siteData.offersSection}
+        />
         <OrderForm selectedOffer={selectedOffer} />
       </main>
       <Footer />
