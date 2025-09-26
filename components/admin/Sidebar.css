@@ -1,0 +1,110 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 280px;
+    background-color: #2c3e50; /* Dark blue-gray */
+    color: #ecf0f1; /* Light gray text */
+    display: flex;
+    flex-direction: column;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    direction: rtl; /* Right-to-left for Arabic */
+}
+
+.sidebar .logo {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #34495e; /* Slightly lighter border */
+}
+
+.sidebar .logo .admin_logo img {
+    width: 45% !important;
+    margin: 0 auto;
+    filter: brightness(0) invert(1); /* Make logo white */
+}
+
+.sidebar .menu_content {
+    padding: 15px 0;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.sidebar .bigTitle {
+    padding: 10px 25px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #95a5a6; /* Muted gray */
+    text-transform: uppercase;
+}
+
+.sidebar .menu_ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar .menu_ul li a {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: 1rem;
+    position: relative;
+}
+
+.sidebar .menu_ul li a:hover {
+    background-color: #34495e;
+}
+
+.sidebar .menu_ul li a.active {
+    background-color: #D9534F; /* Red color from the theme */
+    color: #fff;
+    font-weight: bold;
+}
+
+.sidebar .menu_ul li a.active::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: #fff;
+}
+
+.sidebar .menu_ul li a .icon {
+    margin-left: 15px; /* Margin on the left for RTL */
+    font-size: 1.2rem;
+    width: 25px;
+    text-align: center;
+}
+
+.sidebar .menu_ul li a .arrow {
+    margin-right: auto; /* Push arrow to the far left */
+    transition: transform 0.3s ease;
+}
+
+.sidebar .menu_ul li a .arrow.rotate {
+    transform: rotate(-180deg);
+}
+
+.sidebar .menu_ul ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.sidebar .menu_ul ul li a {
+    padding-right: 65px; /* Indent sub-menu items */
+    font-size: 0.95rem;
+}
+
+.sidebar .menu_ul ul li a.sub-active {
+    color: #fff;
+    font-weight: bold;
+}
