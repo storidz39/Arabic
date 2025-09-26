@@ -18,6 +18,19 @@ export interface Offer {
   bestValue?: boolean;
 }
 
+const Footer: React.FC = () => {
+    return (
+        <footer className="bg-gray-800 text-white text-center p-4">
+            <div className="container mx-auto">
+                <p>&copy; {new Date().getFullYear()} قصص بطلي. جميع الحقوق محفوظة.</p>
+                <a href="#/admin/login" className="text-sm text-gray-400 hover:text-white mt-2 inline-block">
+                    دخول المشرف
+                </a>
+            </div>
+        </footer>
+    );
+};
+
 
 const LandingPage: React.FC = () => {
     const offers: Offer[] = [
@@ -40,6 +53,7 @@ const LandingPage: React.FC = () => {
         <Offers offers={offers} selectedOffer={selectedOffer} setSelectedOffer={setSelectedOffer} />
         <OrderForm selectedOffer={selectedOffer} />
       </main>
+      <Footer />
     </div>
   );
 };
