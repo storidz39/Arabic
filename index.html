@@ -1,551 +1,470 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>X-CHANGE | بوابة منحة السفر</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة منحة السفر - بنك الجزائر</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #1e3a8a;
-            --secondary: #facc15;
-        }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #f1f5f9;
-            color: #1e293b;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Mobile Portrait Optimization */
-        .mobile-viewport {
-            max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background: #ffffff;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 60px rgba(0, 0, 0, 0.1);
-        }
-
-        #splash-screen {
+        body { font-family: 'Cairo', sans-serif; background-color: #f3f4f6; color: #1e293b; overflow-x: hidden; }
+        
+        /* شاشة الترحيب */
+        #page-welcome {
+            background: linear-gradient(to bottom, rgba(0, 51, 102, 0.8), rgba(0, 0, 0, 0.6)), 
+                        url('https://images.unsplash.com/photo-1542281286-9e0a16bb7366?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            width: 100%;
             position: fixed;
-            inset: 0;
-            z-index: 2000;
-            background: linear-gradient(135deg, #1e3a8a 0%, #000 100%);
+            top: 0;
+            left: 0;
+            z-index: 1000;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .x-brand-title {
-            font-size: 5.5rem;
+        .welcome-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 3rem;
+            border-radius: 2rem;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .start-btn {
+            background: #facc15;
+            color: #003366;
+            padding: 1.25rem 2.5rem;
+            border-radius: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 900;
-            color: var(--secondary);
-            letter-spacing: -6px;
-            line-height: 1;
-            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(250, 204, 21, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
         }
 
-        /* Receipt PDF Styling */
-        .receipt-page {
+        /* تنسيق الوصل الاحترافي */
+        #receipt-print-area {
+            background: white;
+            padding: 10mm;
             width: 210mm;
             min-height: 297mm;
-            padding: 20mm;
-            background: white;
-            color: black;
+            margin: auto;
             position: relative;
             box-sizing: border-box;
         }
-
-        .barcode-visual {
+        .receipt-inner {
+            border: 2px solid #1e3a8a;
+            padding: 15mm;
+            height: 100%;
+            position: relative;
+        }
+        
+        .barcode-container {
             display: flex;
-            height: 50px;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .barcode-stripes {
+            display: flex;
+            height: 40px;
             gap: 1.5px;
-            align-items: stretch;
-            justify-content: center;
         }
+        .stripe { background: black; width: 2px; }
+        .stripe.w { width: 5px; }
+        .stripe.s { background: transparent; width: 2px; }
 
-        .bar-line {
-            background: black;
-            width: 2px;
+        .spinner { 
+            border: 3px solid #f3f3f3; border-top: 3px solid #1e40af; 
+            border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; 
         }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .hidden-page { display: none !important; }
+        .fade-out { opacity: 0; visibility: hidden; }
 
-        .bar-line.w {
-            width: 5px;
-        }
-
-        .bar-line.s {
-            background: transparent;
-            width: 2px;
-        }
-
-        .hidden-v {
-            display: none !important;
-        }
-
-        .spin-loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .btn-touch:active {
-            transform: scale(0.96);
-        }
+        @media print { .no-print { display: none !important; } }
     </style>
 </head>
+<body>
 
-<body class="bg-slate-900">
-
-    <!-- 1. شاشة الترحيب -->
-    <div id="splash-screen">
-        <div class="text-center p-6 animate-in fade-in zoom-in duration-1000">
-            <h1 class="x-brand-title mb-2">X-CHANGE</h1>
-            <p class="text-white/40 font-bold tracking-[0.4em] text-[10px] mb-12 uppercase italic">Premium Banking
-                Solution</p>
-            <button onclick="launchApp()"
-                class="bg-yellow-400 text-blue-900 px-14 py-5 rounded-[2.5rem] font-black text-xl shadow-[0_0_50px_rgba(250,204,21,0.3)] hover:bg-yellow-300 transition-all flex items-center gap-3 btn-touch mx-auto">
-                <i data-lucide="plane"></i>
+    <!-- الصفحة 0: الترحيب -->
+    <div id="page-welcome">
+        <div class="welcome-card animate-in fade-in zoom-in duration-700">
+            <i data-lucide="landmark" class="w-20 h-20 text-yellow-400 mx-auto mb-6"></i>
+            <h1 class="text-4xl font-black text-white mb-4 uppercase">بنك الجزائر</h1>
+            <p class="text-white/80 font-bold text-lg mb-10 tracking-wide">المنصة الرسمية لمنحة السفر السياحية</p>
+            <button onclick="startApp()" class="start-btn hover:scale-105 active:scale-95">
+                <i data-lucide="plane-takeoff" class="w-8 h-8"></i>
                 طلب منحة السفر
             </button>
-            <div class="absolute bottom-12 text-white/20 text-[9px] font-bold tracking-widest uppercase">Safe & Digital
-                Platform © 2026</div>
         </div>
     </div>
 
-    <!-- 2. واجهة التطبيق -->
-    <div id="main-app" class="mobile-viewport hidden-v overflow-y-auto">
-
-        <!-- Header -->
-        <header class="bg-blue-900 text-white p-5 flex justify-between items-center sticky top-0 z-50">
-            <span class="text-2xl font-black text-yellow-400 tracking-tighter italic">X-CHANGE</span>
-            <div class="flex items-center gap-2 bg-blue-800/50 px-3 py-1.5 rounded-full border border-blue-600">
-                <div class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
-                <span class="text-[9px] font-black uppercase tracking-tighter">Live Session</span>
+    <!-- التطبيق الرئيسي -->
+    <div id="app-container" class="hidden-page">
+        <header class="bg-blue-900 text-white p-4 shadow-lg sticky top-0 z-50 no-print">
+            <div class="container mx-auto flex justify-between items-center px-4">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="landmark" class="w-7 h-7 text-yellow-400"></i>
+                    <h1 class="text-lg font-black tracking-tight">بنك الجزائر | BANQUE D'ALGERIE</h1>
+                </div>
+                <div class="text-[9px] bg-blue-800 px-3 py-1 rounded border border-blue-700 font-bold uppercase">الخدمات المصرفية الرقمية</div>
             </div>
         </header>
 
-        <!-- Stepper -->
-        <div class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-[72px] z-40">
-            <div id="step-mark-1" class="flex flex-col items-center gap-1 text-blue-600 font-bold"><i
-                    data-lucide="layout-grid" class="w-4 h-4"></i><span class="text-[8px] uppercase">النوع</span></div>
-            <div class="flex-1 h-px bg-slate-100 mx-4"></div>
-            <div id="step-mark-2" class="flex flex-col items-center gap-1 text-slate-300 font-bold"><i
-                    data-lucide="file-digit" class="w-4 h-4"></i><span class="text-[8px] uppercase">البيانات</span>
-            </div>
-            <div class="flex-1 h-px bg-slate-100 mx-4"></div>
-            <div id="step-mark-3" class="flex flex-col items-center gap-1 text-slate-300 font-bold"><i
-                    data-lucide="check-circle" class="w-4 h-4"></i><span class="text-[8px] uppercase">الوصول</span>
-            </div>
-        </div>
-
-        <!-- Body Area -->
-        <div class="flex-1 px-6 py-8 pb-32 overflow-x-hidden">
-
-            <!-- VIEW 1 -->
-            <div id="v1" class="view space-y-6">
-                <h2 class="text-2xl font-black text-slate-800 tracking-tight leading-tight">ابدأ عملية الطلب<br><span
-                        class="text-blue-600 text-lg">بكل أمان وسهولة</span></h2>
-                <div class="grid grid-cols-1 gap-4">
-                    <button onclick="setAppFlow('individual')"
-                        class="flex items-center gap-5 bg-white p-7 rounded-[2.5rem] border-2 border-slate-50 hover:border-blue-600 shadow-sm transition-all btn-touch text-right group">
-                        <div
-                            class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
-                            <i data-lucide="user"></i></div>
-                        <div class="flex-1">
-                            <h3 class="font-black text-lg">طلب فردي</h3>
-                            <p class="text-[9px] text-slate-400 font-bold italic uppercase">Individual Traveler</p>
-                        </div>
-                    </button>
-                    <button onclick="setAppFlow('family')"
-                        class="flex items-center gap-5 bg-white p-7 rounded-[2.5rem] border-2 border-slate-50 hover:border-green-600 shadow-sm transition-all btn-touch text-right group">
-                        <div
-                            class="w-14 h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center group-hover:bg-green-600 group-hover:text-white transition-all">
-                            <i data-lucide="users-2"></i></div>
-                        <div class="flex-1">
-                            <h3 class="font-black text-lg">طلب عائلي</h3>
-                            <p class="text-[9px] text-slate-400 font-bold italic uppercase">Group Family Package</p>
-                        </div>
-                    </button>
+        <main class="container mx-auto px-4 py-8 max-w-2xl">
+            <!-- Stepper -->
+            <div id="stepper" class="flex justify-between mb-8 no-print bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                <div id="step-1" class="flex flex-col items-center gap-1 text-blue-600 font-bold">
+                    <i data-lucide="users"></i><span class="text-[9px]">النوع</span>
+                </div>
+                <div class="flex-1 border-t-2 border-dashed mt-4 mx-4 border-gray-100"></div>
+                <div id="step-2" class="flex flex-col items-center gap-1 text-gray-300">
+                    <i data-lucide="file-text"></i><span class="text-[9px]">البيانات</span>
+                </div>
+                <div class="flex-1 border-t-2 border-dashed mt-4 mx-4 border-gray-100"></div>
+                <div id="step-3" class="flex flex-col items-center gap-1 text-gray-400">
+                    <i data-lucide="credit-card"></i><span class="text-[9px]">الدفع</span>
                 </div>
             </div>
 
-            <!-- VIEW 2 -->
-            <div id="v2" class="view hidden-v space-y-6">
-                <h2 class="text-xl font-black text-slate-800 border-r-4 border-blue-600 pr-3">رفع ومعالجة الجوازات</h2>
-                <div id="upload-cards-container" class="space-y-3"></div>
+            <!-- Page 1: Type Selection -->
+            <div id="view-1" class="view space-y-6">
+                <h2 class="text-2xl font-black text-center text-gray-800">اختيار نوع الطلب</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div onclick="selectAppType('individual')" class="bg-white p-8 rounded-3xl border-2 border-transparent hover:border-blue-600 cursor-pointer shadow-sm hover:shadow-xl transition-all flex flex-col items-center group">
+                        <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all"><i data-lucide="user" class="w-8 h-8"></i></div>
+                        <span class="text-lg font-black text-gray-700">طلب فردي</span>
+                    </div>
+                    <div onclick="selectAppType('family')" class="bg-white p-8 rounded-3xl border-2 border-transparent hover:border-green-600 cursor-pointer shadow-sm hover:shadow-xl transition-all flex flex-col items-center group">
+                        <div class="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition-all"><i data-lucide="users" class="w-8 h-8"></i></div>
+                        <span class="text-lg font-black text-gray-700">طلب عائلي</span>
+                    </div>
+                </div>
+            </div>
 
-                <div id="crossing-box-ui"
-                    class="hidden-v bg-slate-50 p-6 rounded-[2.5rem] border border-slate-200 space-y-4 animate-in slide-in-from-bottom">
-                    <h3 class="font-black text-blue-900 text-xs uppercase tracking-widest flex items-center gap-2"><i
-                            data-lucide="map-pin" class="w-4 h-4"></i> Travel Crossing</h3>
-                    <div class="space-y-3">
-                        <select id="ui-type-sel" onchange="loadCrossingPointsUI()"
-                            class="w-full p-4 border rounded-2xl outline-none font-bold text-sm bg-white">
+            <!-- Page 2: Upload Data -->
+            <div id="view-2" class="view hidden-page space-y-6">
+                <h2 class="text-xl font-bold border-r-4 border-blue-600 pr-3">بيانات جوازات السفر</h2>
+                <div id="passport-upload-list" class="space-y-4"></div>
+                
+                <div id="crossing-box" class="hidden bg-white p-6 rounded-3xl border border-blue-100 shadow-sm space-y-6 animate-in slide-in-from-bottom duration-500">
+                    <h3 class="font-bold text-blue-900 flex items-center gap-2"><i data-lucide="map-pin"></i> مكان العبور والوجهة</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <select id="sel-cross-type" onchange="loadCrossingPoints()" class="p-3 border rounded-xl outline-none bg-gray-50 text-sm font-bold">
                             <option value="">نوع المعبر</option>
-                            <option value="air">جوي</option>
-                            <option value="sea">بحري</option>
-                            <option value="land">بري</option>
+                            <option value="air">جوي</option><option value="sea">بحري</option><option value="land">بري</option>
                         </select>
-                        <select id="ui-point-sel" disabled
-                            class="w-full p-4 border rounded-2xl outline-none font-bold text-sm bg-white">
-                            <option value="">-- اختر النقطة --</option>
+                        <select id="sel-cross-point" disabled class="p-3 border rounded-xl outline-none bg-gray-50 text-sm font-bold">
+                            <option value="">المعبر المحدد</option>
                         </select>
                     </div>
                 </div>
-
-                <button id="btn-next-to-pay" disabled onclick="initializePaymentHub()"
-                    class="w-full py-5 bg-blue-900 text-white rounded-[1.8rem] font-black shadow-2xl disabled:opacity-20 btn-touch">تأكيد
-                    ومتابعة للسداد</button>
+                <button id="btn-goto-3" disabled onclick="toView3()" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black shadow-xl disabled:opacity-30">تأكيد البيانات والانتقال</button>
             </div>
 
-            <!-- VIEW 3 (HUB) -->
-            <div id="v3" class="view hidden-v space-y-6 animate-in slide-in-from-right">
-                <div class="flex flex-col gap-1 mb-4">
-                    <h2 class="text-2xl font-black text-slate-800 tracking-tight italic">لوحة التحكم</h2>
-                    <p
-                        class="text-[10px] text-slate-500 font-bold uppercase tracking-widest underline decoration-yellow-400 decoration-2">
-                        إصدار وصولات منحة السفر الفردية</p>
+            <!-- Page 3: Individual Payment List -->
+            <div id="view-3" class="view hidden-page space-y-6">
+                <div class="bg-blue-50 p-6 rounded-3xl border border-blue-100">
+                    <h2 class="text-lg font-black text-blue-900">جدول سداد الرسوم</h2>
+                    <p class="text-xs text-blue-600 font-bold uppercase italic">يجب الدفع لكل فرد بشكل مستقل لإصدار الوصل الخاص به</p>
                 </div>
-
-                <!-- المنطقة التي سيتم ملؤها -->
-                <div id="hub-cards-injection" class="space-y-4"></div>
-
-                <div
-                    class="bg-slate-100 p-5 rounded-3xl text-[9px] text-slate-400 font-bold text-center border border-slate-200 mt-4 leading-relaxed">
-                    تم حساب المبلغ تلقائياً بناءً على عمر المسافر وسعر صرف بنك الجزائر الرسمي.<br>
-                    (1€ = 160.00 DZD + 1190 DZD Fees)
-                </div>
+                
+                <div id="payment-items-container" class="space-y-4"></div>
+                <button onclick="location.reload()" class="w-full py-4 text-gray-400 font-bold hover:text-red-500 transition-colors no-print">العودة للرئيسية</button>
             </div>
-
-        </div>
-
-        <!-- Navigation Nav -->
-        <nav
-            class="fixed bottom-0 left-0 right-0 max-w-[450px] mx-auto bg-white/95 border-t p-4 flex justify-around items-center z-40">
-            <button onclick="location.reload()" class="text-slate-300 flex flex-col items-center gap-1 btn-touch"><i
-                    data-lucide="home" class="w-5 h-5"></i><span
-                    class="text-[8px] font-bold tracking-tighter">البداية</span></button>
-            <button class="text-blue-900 flex flex-col items-center gap-1 btn-touch"><i data-lucide="layout-dashboard"
-                    class="w-5 h-5"></i><span class="text-[8px] font-bold tracking-tighter">الطلبات</span></button>
-            <button class="text-slate-300 flex flex-col items-center gap-1 btn-touch"><i data-lucide="shield-check"
-                    class="w-5 h-5"></i><span class="text-[8px] font-bold tracking-tighter">الأمان</span></button>
-        </nav>
+        </main>
     </div>
 
-    <!-- PAYMENT MODAL -->
-    <div id="payment-modal-ui" class="hidden-v fixed inset-0 z-[100] flex items-end no-print">
-        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" onclick="closePayUI()"></div>
-        <div
-            class="relative w-full max-w-[450px] mx-auto bg-white rounded-t-[3rem] p-8 space-y-6 shadow-2xl animate-in slide-in-from-bottom">
-            <div class="w-16 h-1 bg-slate-200 rounded-full mx-auto mb-2"></div>
-            <h3 class="text-center font-black text-xl italic underline decoration-yellow-400 decoration-4">Safe Banking
-                Gateway</h3>
-
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="setMethod('dahabia')" id="bg-dahabia"
-                    class="border-2 rounded-2xl p-5 flex flex-col items-center gap-2 border-slate-100 bg-slate-50 transition-all">
-                    <div
-                        class="w-12 h-12 bg-yellow-400 text-blue-900 rounded-full flex items-center justify-center font-black shadow-sm italic">
-                        D</div>
-                    <span class="text-[9px] font-black uppercase">Edahabia</span>
-                </button>
-                <button onclick="setMethod('cib')" id="bg-cib"
-                    class="border-2 rounded-2xl p-5 flex flex-col items-center gap-2 border-slate-100 bg-slate-50 transition-all">
-                    <div
-                        class="w-12 h-12 bg-blue-800 text-white rounded-full flex items-center justify-center font-black shadow-sm italic">
-                        CIB</div>
-                    <span class="text-[9px] font-black uppercase">Interbank</span>
-                </button>
-            </div>
-
-            <div id="card-form-injection" class="space-y-4 pt-4 border-t hidden-v animate-in fade-in">
-                <div class="bg-blue-50 p-4 rounded-2xl flex justify-between items-center border border-blue-100">
-                    <span class="text-[10px] font-black text-blue-800 uppercase italic">Amount to Pay:</span>
-                    <span id="txt-price-label"
-                        class="font-black text-blue-900 text-xl tracking-tighter underline"></span>
+    <!-- بوابة الدفع: الذهبية -->
+    <div id="gateway-dahabia" class="hidden-page fixed inset-0 bg-gray-100 z-[200] overflow-y-auto no-print">
+        <div class="max-w-md mx-auto my-10 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
+            <div class="bg-[#003366] p-6 text-white flex justify-between items-center">
+                <div class="text-right">
+                    <p class="text-[10px] opacity-70">ALGÉRIE POSTE</p>
+                    <h3 class="font-black text-lg italic tracking-wider">EDAHABIA</h3>
                 </div>
-                <input type="text" id="inp-card-ui" placeholder="رقم البطاقة (16 رقم)" maxlength="16"
-                    class="w-full p-4 border-2 border-slate-100 rounded-2xl text-center font-mono text-xl outline-none focus:border-blue-600 transition-all shadow-inner">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" placeholder="MM/YY"
-                        class="p-4 border-2 border-slate-100 rounded-2xl text-center outline-none">
-                    <input type="password" placeholder="CVV" maxlength="3"
-                        class="p-4 border-2 border-slate-100 rounded-2xl text-center outline-none">
+                <div class="bg-yellow-400 p-2 rounded">
+                    <i data-lucide="credit-card" class="text-[#003366]"></i>
                 </div>
-                <button onclick="finalizeUserPayment()"
-                    class="w-full py-5 bg-blue-900 text-white rounded-[1.5rem] font-black text-lg shadow-2xl btn-touch">سداد
-                    العملية الآن</button>
             </div>
-            <button onclick="closePayUI()" class="w-full text-xs text-slate-400 font-bold pb-6 uppercase italic">Cancel
-                Request</button>
+            <div class="p-8 space-y-6">
+                <div class="bg-blue-50 p-4 rounded-xl flex justify-between">
+                    <span class="text-xs text-blue-800 font-bold">المبلغ المطلوب:</span>
+                    <span id="dahabia-amt" class="font-black text-blue-900"></span>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">NUMÉRO DE CARTE / رقم البطاقة</label>
+                        <input type="text" id="in-dahabia-card" placeholder="6073 XXXX XXXX XXXX" maxlength="16" class="w-full p-4 border rounded-xl font-mono text-center text-lg focus:ring-2 ring-yellow-400 outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 mb-1">DATE EXP / تاريخ الانتهاء</label>
+                            <input type="text" placeholder="MM/YY" class="w-full p-4 border rounded-xl text-center outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 mb-1">CVV2 / الرمز السري</label>
+                            <input type="password" placeholder="123" maxlength="3" class="w-full p-4 border rounded-xl text-center outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">NOM DU TITULAIRE / اسم صاحب البطاقة</label>
+                        <input type="text" id="in-dahabia-name" placeholder="NOM PRENOM" class="w-full p-4 border rounded-xl uppercase font-bold text-sm">
+                    </div>
+                </div>
+                <button onclick="submitPayment('dahabia')" class="w-full py-5 bg-yellow-400 text-[#003366] font-black rounded-xl text-lg shadow-xl hover:bg-yellow-500 transition-all">VALIDER / تأكيد</button>
+                <button onclick="closeGateway()" class="w-full text-xs text-gray-400 font-bold mt-2">ANNULER / إلغاء</button>
+            </div>
         </div>
     </div>
 
-    <!-- LOADER OVERLAY -->
-    <div id="loader-overlay-ui"
-        class="hidden-v fixed inset-0 z-[200] bg-white flex flex-col items-center justify-center text-center p-10 no-print">
-        <div class="spin-loader w-14 h-14 mb-4"></div>
-        <p id="loader-msg-ui" class="font-black text-blue-900 text-lg uppercase italic tracking-tighter">Processing
-            Digitally...</p>
-        <p class="text-[10px] text-slate-400 mt-2 font-bold tracking-widest uppercase italic opacity-50">Encryption
-            System Active</p>
+    <!-- بوابة الدفع: CIB -->
+    <div id="gateway-cib" class="hidden-page fixed inset-0 bg-gray-50 z-[200] overflow-y-auto no-print">
+        <div class="max-w-md mx-auto my-10 bg-white rounded-2xl shadow-2xl overflow-hidden border-t-8 border-blue-800 border-x border-b border-gray-200">
+            <div class="bg-blue-800 p-6 text-white text-center">
+                <h3 class="font-black text-2xl italic">SATIM - CIB</h3>
+                <p class="text-[9px] opacity-60 uppercase tracking-widest mt-1">Plateforme de Paiement Sécurisée</p>
+            </div>
+            <div class="p-8 space-y-6">
+                <div class="bg-blue-50 p-5 rounded-xl flex justify-between items-center">
+                    <span class="text-xs font-bold text-blue-800 uppercase">Total Amount:</span>
+                    <span id="cib-amt" class="font-black text-blue-900 text-2xl"></span>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">NUMÉRO DE CARTE CIB / رقم البطاقة</label>
+                        <input type="text" id="in-cib-card" placeholder="XXXX XXXX XXXX XXXX" maxlength="16" class="w-full p-5 border rounded-xl font-mono text-center text-xl focus:ring-2 ring-blue-600 outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" placeholder="MM/YY" class="p-5 border rounded-xl text-center">
+                        <input type="password" placeholder="CVV" class="p-5 border rounded-xl text-center">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">TITULAIRE DE LA CARTE / صاحب البطاقة</label>
+                        <input type="text" id="in-cib-name" placeholder="NOM COMPLET" class="w-full p-5 border rounded-xl uppercase font-bold text-sm">
+                    </div>
+                </div>
+                <button onclick="submitPayment('cib')" class="w-full py-5 bg-blue-800 text-white font-black rounded-xl text-xl shadow-xl hover:bg-blue-900 transition-all">PAYER MAINTENANT / دفع</button>
+                <button onclick="closeGateway()" class="w-full text-[10px] text-gray-400 font-bold uppercase mt-4">Abandonner la transaction</button>
+            </div>
+        </div>
     </div>
 
-    <!-- PDF TARGET -->
-    <div id="pdf-root-hidden" class="hidden">
-        <div class="receipt-page" id="pdf-node-target">
-            <div class="watermark">CERTIFIED X-CHANGE</div>
-            <div class="flex justify-between items-start border-b-4 border-blue-900 pb-4 mb-8">
-                <div class="text-[10px] font-bold uppercase">الجمهورية الجزائرية الديمقراطية الشعبية<br>وزارة المالية -
-                    بنك الجزائر</div>
-                <div class="text-center">
-                    <h2 class="text-2xl font-black text-blue-900 uppercase">وصل سداد منحة السفر السياحية</h2>
-                    <p
-                        class="text-[10px] font-bold tracking-widest mt-1 uppercase italic border-y py-1 border-slate-100">
-                        Electronic Quittance System</p>
+    <!-- Loader -->
+    <div id="main-loader" class="hidden-page fixed inset-0 bg-white/95 z-[300] flex flex-col items-center justify-center">
+        <div class="spinner mb-4 w-12 h-12"></div>
+        <p id="loader-status" class="font-black text-blue-900 text-lg">جاري تشفير البيانات ومعالجة الدفع...</p>
+    </div>
+
+    <!-- نموذج الوصل المخفي للطباعة -->
+    <div id="receipt-print-wrapper" class="hidden-page no-print">
+        <div id="receipt-print-area">
+            <div class="receipt-inner">
+                <div class="flex justify-between items-start border-b-4 border-blue-900 pb-4 mb-8">
+                    <div class="text-[10px] font-bold">
+                        الجمهورية الجزائرية الديمقراطية الشعبية<br>
+                        وزارة المالية - بنك الجزائر
+                    </div>
+                    <div class="text-center">
+                        <h2 class="text-2xl font-black text-blue-900">وصل سداد منحة السفر</h2>
+                        <p class="text-[10px] font-bold tracking-[0.2em] uppercase mt-1 italic underline">ALLOCATION VOYAGE - QUITTANCE OFFICIELLE</p>
+                    </div>
+                    <div class="text-[10px] font-bold text-left italic">
+                        Document Sécurisé<br>
+                        N° <span id="r-ref-top"></span>
+                    </div>
                 </div>
-                <div class="text-[10px] font-bold text-left italic">X-CHANGE DIGITAL<br>ID: <span id="p-ref-top"></span>
+
+                <div class="grid grid-cols-2 gap-4 text-[11px] mb-8 bg-gray-50 p-6 rounded-[2rem] border">
+                    <p><b>رقم المرجع (ID):</b> <span id="r-ref" class="font-black text-blue-800"></span></p>
+                    <p class="text-left"><b>تاريخ العملية:</b> <span id="r-date"></span></p>
+                    <p><b>تاريخ خروج الرحلة:</b> <span id="r-out" class="text-green-700 font-bold"></span></p>
+                    <p class="text-left"><b>تاريخ عودة الرحلة:</b> <span id="r-in" class="text-red-700 font-bold"></span></p>
+                    <p><b>نقطة العبور:</b> <span id="r-point" class="font-bold underline"></span></p>
+                    <p class="text-left"><b>وسيلة الدفع:</b> <span id="r-method" class="font-bold text-blue-600"></span></p>
                 </div>
-            </div>
-            <div
-                class="grid grid-cols-2 gap-6 text-[12px] mb-8 bg-slate-50 p-8 rounded-[2.5rem] border border-slate-200 shadow-inner">
-                <p><b>رقم المرجع (Transaction):</b> <br><span id="p-ref"
-                        class="font-black text-blue-800 tracking-tighter uppercase"></span></p>
-                <p class="text-left"><b>تاريخ العملية:</b> <br><span id="p-date"></span></p>
-                <p><b>تاريخ خروج الرحلة:</b> <br><span id="p-out" class="text-green-700 font-black underline"></span>
-                </p>
-                <p class="text-left"><b>تاريخ عودة الرحلة:</b> <br><span id="p-in"
-                        class="text-red-700 font-bold underline"></span></p>
-                <p><b>وجهة العبور والحدود:</b> <br><span id="p-point"
-                        class="font-black uppercase italic underline"></span></p>
-                <p class="text-left"><b>بوابة الدفع:</b> <br><span id="p-method"
-                        class="font-bold text-blue-600 underline"></span></p>
-            </div>
-            <div class="mb-10">
-                <h4 class="text-sm font-black text-blue-900 mb-5 border-r-4 border-blue-900 pr-4 uppercase">Beneficiary
-                    Information:</h4>
-                <div
-                    class="grid grid-cols-2 gap-y-6 text-[14px] p-12 border-2 border-dashed rounded-[3.5rem] bg-white shadow-sm relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-3 h-full bg-yellow-400"></div>
-                    <p><b>الاسم الكامل / Nom Complet:</b> <br><span id="p-name"
-                            class="font-bold uppercase tracking-tight"></span></p>
-                    <p><b>رقم جواز السفر / Passport ID:</b> <br><span id="p-pass"
-                            class="font-mono font-black tracking-widest text-lg"></span></p>
-                    <p><b>تاريخ انتهاء الصلاحية:</b> <br><span id="p-expiry"></span></p>
-                    <p><b>الجنسية / Nationalité:</b> <br><span id="p-nation">جزائرية (DZ)</span></p>
-                    <p><b>العمر المستخرج:</b> <br><span id="p-age"></span> سنة</p>
-                    <p class="text-blue-900 text-4xl mt-4"><b>قيمة العملة الممنوحة:</b> <br><span id="p-eur"
-                            class="font-black tracking-tighter underline"></span> €</p>
+
+                <div class="mb-10">
+                    <h4 class="text-sm font-black text-blue-900 mb-5 border-r-4 border-blue-900 pr-4">المعلومات الشخصية المستخرجة:</h4>
+                    <div class="grid grid-cols-2 gap-y-6 text-[13px] p-10 border-2 border-dashed rounded-[3rem] bg-white shadow-sm relative overflow-hidden">
+                        <p><b>الاسم واللقب:</b> <span id="r-name" class="font-bold"></span></p>
+                        <p><b>رقم جواز السفر:</b> <span id="r-pass" class="font-mono font-black"></span></p>
+                        <p><b>تاريخ انتهاء الجواز:</b> <span id="r-expiry"></span></p>
+                        <p><b>الجنسية:</b> <span id="r-nation">جزائرية (DZ)</span></p>
+                        <p><b>العمر المستخرج:</b> <span id="r-age"></span> سنة</p>
+                        <p class="text-blue-900 text-2xl mt-4"><b>قيمة المنحة الممنوحة:</b> <span id="r-eur" class="font-black underline"></span> €</p>
+                    </div>
                 </div>
-            </div>
-            <div
-                class="bg-blue-900 text-white p-12 rounded-[2.5rem] flex justify-between items-center mb-10 shadow-2xl border-b-8 border-yellow-400">
-                <div>
-                    <p class="text-[12px] opacity-70 font-black mb-1 italic tracking-widest uppercase">Total Paid Sum
-                        (DZD)</p>
-                    <h3 id="p-dzd" class="text-5xl font-black text-yellow-400 tracking-tighter"></h3>
+
+                <div class="bg-blue-900 text-white p-8 rounded-[2rem] flex justify-between items-center mb-10 shadow-2xl">
+                    <div>
+                        <p class="text-[11px] opacity-70 uppercase tracking-widest font-bold">المبلغ المدفوع بالدينار (DZD)</p>
+                        <h3 id="r-dzd" class="text-4xl font-black text-yellow-400"></h3>
+                    </div>
+                    <div class="text-left border-r-2 pr-8 border-white/20">
+                        <p class="text-[11px] opacity-70">سعر الصرف البنكي</p>
+                        <p class="font-bold text-xl">1€ = 160.00 DA</p>
+                    </div>
                 </div>
-                <div class="text-left border-r pr-12 border-white/20 font-bold text-xl uppercase italic">Bank Rate:
-                    160.00 DA</div>
-            </div>
-            <div class="flex justify-between items-end mt-24">
-                <div class="flex flex-col items-center">
-                    <div id="p-barcode-ui" class="barcode-visual mb-2"></div>
-                    <span id="p-barcode-text"
-                        class="text-[11px] font-mono font-bold tracking-[0.5em] text-slate-500 uppercase tracking-tighter underline"></span>
-                </div>
-                <div class="text-center">
-                    <i data-lucide="qr-code" class="w-16 h-16 opacity-20 mx-auto mb-2"></i>
-                    <p
-                        class="text-[9px] text-slate-400 font-bold uppercase mt-1 italic tracking-widest underline decoration-blue-900">
-                        Banque d'Algérie Verified</p>
+
+                <div class="flex justify-between items-end mt-16">
+                    <div class="barcode-container">
+                        <div id="barcode-area" class="barcode-stripes mb-2"></div>
+                        <span id="barcode-txt" class="text-[11px] font-mono font-bold tracking-[0.5em] text-gray-500"></span>
+                    </div>
+                    <div class="text-center">
+                        <i data-lucide="qr-code" class="w-16 h-16 opacity-20 mx-auto mb-2"></i>
+                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">Banque d'Algérie<br>Official Stamp</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let currentMode = '';
-        let globalMembers = [];
-        let activeProcessingIdx = null;
-        let activePayType = '';
-        const BANK_FX = 160.00;
-        const BANK_EXTRA = 1190;
-        const LOC_MAP = {
-            air: ["مطار هواري بومدين (الجزائر)", "مطار أحمد بن بلة (وهران)", "مطار محمد بوضياف (قسنطينة)"],
+        let currentAppType = '';
+        let appMembersData = [];
+        let activeProcessingId = null;
+        const FX_RATE = 160.00;
+        const ADMIN_FEES = 1190;
+        const CROSS_POINTS = {
+            air: ["مطار هواري بومدين", "مطار أحمد بن بلة (وهران)", "مطار محمد بوضياف (قسنطينة)"],
             sea: ["ميناء الجزائر العاصمة", "ميناء وهران", "ميناء بجاية"],
-            land: ["معبر أم الطبول الحدودي", "معبر طالب العربي", "معبر الدبداب"]
+            land: ["معبر أم الطبول", "معبر طالب العربي", "معبر بوشبكة"]
         };
 
         window.onload = () => { lucide.createIcons(); };
 
-        // 1. شاشة الترحيب
-        function launchApp() {
-            showLoaderUI("جاري إعداد بيئة العمل...");
+        function startApp() {
+            document.getElementById('page-welcome').classList.add('fade-out');
             setTimeout(() => {
-                hideLoaderUI();
-                document.getElementById('splash-screen').style.transform = 'translateY(-100%)';
-                setTimeout(() => {
-                    document.getElementById('splash-screen').classList.add('hidden-v');
-                    document.getElementById('main-app').classList.remove('hidden-v');
-                    lucide.createIcons();
-                }, 800);
-            }, 1200);
+                document.getElementById('page-welcome').classList.add('hidden-page');
+                document.getElementById('app-container').classList.remove('hidden-page');
+                lucide.createIcons();
+            }, 600);
         }
 
-        // 2. التنقل
-        function navigate(viewIndex) {
-            const views = ['v1', 'v2', 'v3'];
-            views.forEach(v => document.getElementById(v).classList.add('hidden-v'));
-            document.getElementById(views[viewIndex - 1]).classList.remove('hidden-v');
+        function selectAppType(type) {
+            currentAppType = type;
+            renderPassportUploads();
+            changeView(2);
+        }
 
-            // Stepper
-            for (let i = 1; i <= 3; i++) {
-                const s = document.getElementById(`step-mark-${i}`);
-                if (i <= viewIndex) {
-                    s.classList.add('text-blue-600'); s.classList.remove('text-slate-300');
-                    s.querySelector('i').setAttribute('data-lucide', 'circle-dot');
-                } else {
-                    s.classList.remove('text-blue-600'); s.classList.add('text-slate-300');
-                    s.querySelector('i').setAttribute('data-lucide', 'circle');
-                }
+        function changeView(n) {
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden-page'));
+            document.getElementById(view-${n}).classList.remove('hidden-page');
+            
+            // Stepper Control
+            if(n === 2) document.getElementById('step-2').classList.add('text-blue-600', 'font-bold');
+            if(n === 3) {
+                document.getElementById('step-3').classList.add('text-blue-600', 'font-bold');
+                document.getElementById('step-2').classList.replace('text-blue-600', 'text-green-600');
             }
-            lucide.createIcons();
-            document.getElementById('main-app').scrollTo(0, 0);
+            window.scrollTo(0,0);
         }
 
-        function setAppFlow(mode) {
-            currentMode = mode;
-            globalMembers = []; // Clear old data
-            renderUploaders();
-            navigate(2);
-        }
-
-        // 3. رفع الجوازات
-        function renderUploaders() {
-            const list = document.getElementById('upload-cards-container');
+        function renderPassportUploads() {
+            const list = document.getElementById('passport-upload-list');
             list.innerHTML = '';
-            const membersList = currentMode === 'individual' ? [{ id: 0, lbl: 'جواز المسافر الرئيسي' }] :
-                [{ id: 0, lbl: 'جواز سفر (الأب)' }, { id: 1, lbl: 'جواز سفر (الأم)' }, { id: 2, lbl: 'الابن 01' }, { id: 3, lbl: 'الابن 02' }];
-
-            membersList.forEach(m => {
-                const card = document.createElement('div');
-                card.className = "bg-white p-5 rounded-[2.2rem] border border-slate-100 shadow-sm flex justify-between items-center transition-all hover:border-blue-300";
-                card.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-slate-50 text-slate-400 rounded-2xl flex items-center justify-center"><i data-lucide="scan"></i></div>
-                        <div><p class="font-black text-sm text-slate-800 tracking-tight">${m.lbl}</p><p id="st-msg-${m.id}" class="text-[10px] text-slate-400 font-bold italic">بانتظار الرفع المعالج</p></div>
+            const schema = currentAppType === 'individual' ? [{id:0, lbl:'المسافر الرئيسي'}] : 
+                [{id:0, lbl:'الأب'}, {id:1, lbl:'الأم'}, {id:2, lbl:'الابن الأول'}, {id:3, lbl:'الابن الثاني'}];
+            
+            schema.forEach(s => {
+                const div = document.createElement('div');
+                div.className = "bg-white p-6 rounded-[2rem] border shadow-sm flex justify-between items-center group hover:border-blue-500 transition-all";
+                div.innerHTML = `
+                    <div class="flex items-center gap-5">
+                        <div class="w-14 h-14 bg-blue-50 text-blue-400 rounded-3xl flex items-center justify-center transition-all group-hover:bg-blue-600 group-hover:text-white"><i data-lucide="scan"></i></div>
+                        <div><p class="font-black text-gray-800 text-lg">${s.lbl}</p><p id="ocr-st-${s.id}" class="text-[11px] text-gray-400 font-bold italic">ارفع صورة جواز السفر</p></div>
                     </div>
-                    <label class="bg-blue-600 text-white px-7 py-2.5 rounded-2xl text-[10px] font-black cursor-pointer shadow-lg shadow-blue-100 btn-touch">
-                        رفع <input type="file" class="hidden" onchange="processOcrSim(${m.id}, '${m.lbl}')">
+                    <label class="bg-blue-600 text-white px-7 py-3 rounded-[1.5rem] text-xs font-black cursor-pointer shadow-lg shadow-blue-100 hover:bg-blue-700 active:scale-95 transition-all">
+                        رفع <input type="file" class="hidden" onchange="performOcrMock(${s.id}, '${s.lbl}')">
                     </label>
                 `;
-                list.appendChild(card);
+                list.appendChild(div);
             });
             lucide.createIcons();
         }
 
-        function processOcrSim(idx, lbl) {
-            const msg = document.getElementById(`st-msg-${idx}`);
-            msg.innerHTML = '<span class="flex items-center gap-2">جاري المعالجة... <div class="spin-loader w-3 h-3"></div></span>';
+        function performOcrMock(idx, lbl) {
+            const statusLabel = document.getElementById(ocr-st-${idx});
+            statusLabel.innerHTML = '<span class="flex items-center gap-2">جاري استخراج البيانات... <div class="spinner"></div></span>';
             setTimeout(() => {
-                const calculatedAge = (idx >= 2) ? 12 : 44;
-                const mockPass = "DZ" + Math.floor(1000000 + Math.random() * 9000000);
-                const grantValue = calculatedAge >= 19 ? 750 : 300;
-
-                globalMembers[idx] = {
-                    id: idx, label: lbl, name: lbl + " فلان بن فلان",
-                    pass: mockPass, age: calculatedAge, expiry: "20/11/2030",
-                    grant: grantValue, paid: false, method: ''
+                const age = (idx >= 2) ? 12 : 45;
+                const passportNumber = "DZ" + Math.floor(1000000 + Math.random() * 9000000);
+                const grantEuro = age >= 19 ? 750 : 300;
+                appMembersData[idx] = { 
+                    id: idx, label: lbl, fullName: lbl + " فلان بن فلان", 
+                    pass: passportNumber, age: age, expiry: "14/08/2032", 
+                    amount: grantEuro, isPaid: false, payMethodUsed: '' 
                 };
-
-                msg.innerText = "تم التحقق: " + mockPass + " | " + calculatedAge + " سنة";
-                msg.className = "text-[10px] text-green-600 font-black";
-
-                const needed = currentMode === 'individual' ? 1 : 4;
-                if (globalMembers.filter(x => x).length === needed) {
-                    document.getElementById('crossing-box-ui').classList.remove('hidden-v');
-                    document.getElementById('btn-next-to-pay').disabled = false;
+                statusLabel.innerText = "تم التحقق من الجواز: " + passportNumber + " (العمر: " + age + " سنة)";
+                statusLabel.className = "text-[11px] text-green-600 font-black";
+                
+                const required = currentAppType === 'individual' ? 1 : 4;
+                if(appMembersData.filter(m => m).length === required) {
+                    document.getElementById('crossing-box').classList.remove('hidden');
+                    document.getElementById('btn-goto-3').disabled = false;
                 }
-            }, 1000);
+            }, 1200);
         }
 
-        function loadCrossingPointsUI() {
-            const type = document.getElementById('ui-type-sel').value;
-            const menu = document.getElementById('ui-point-sel');
-            menu.innerHTML = '<option value="">-- اختر النقطة --</option>';
-            if (type && LOC_MAP[type]) {
-                menu.disabled = false;
-                LOC_MAP[type].forEach(pt => menu.innerHTML += `<option value="${pt}">${pt}</option>`);
-            } else menu.disabled = true;
+        function loadCrossingPoints() {
+            const type = document.getElementById('sel-cross-type').value;
+            const pointSelect = document.getElementById('sel-cross-point');
+            pointSelect.innerHTML = '<option value="">المعبر المحدد</option>';
+            if(type && CROSS_POINTS[type]) {
+                pointSelect.disabled = false;
+                CROSS_POINTS[type].forEach(pt => {
+                    const opt = document.createElement('option');
+                    opt.value = pt; opt.innerText = pt;
+                    pointSelect.appendChild(opt);
+                });
+            } else pointSelect.disabled = true;
         }
 
-        // 4. لوحة التحكم - الحل النهائي
-        function initializePaymentHub() {
-            const ptVal = document.getElementById('ui-point-sel').value;
-            if (!ptVal) return alert("حدد معبر العبور");
-
-            // أولاً: الانتقال للصفحة
-            navigate(3);
-
-            // ثانياً: استدعاء دالة الرسم فوراً
-            renderPaymentDashboard();
+        function toView3() {
+            if(!document.getElementById('sel-cross-point').value) return alert("يرجى اختيار مكان العبور المفضل");
+            changeView(3);
+            renderPaymentGrid();
         }
 
-        function renderPaymentDashboard() {
-            const container = document.getElementById('hub-cards-injection');
-            if (!container) return;
-
+        function renderPaymentGrid() {
+            const container = document.getElementById('payment-items-container');
             container.innerHTML = '';
-
-            // التحقق من وجود بيانات
-            if (globalMembers.length === 0) {
-                container.innerHTML = '<p class="text-center text-slate-300 font-bold italic py-10">لا توجد بيانات مسجلة</p>';
-                return;
-            }
-
-            globalMembers.forEach((member, index) => {
-                const totalCost = (member.grant * BANK_FX) + BANK_EXTRA;
+            appMembersData.forEach((m, idx) => {
+                const totalDzdCost = (m.amount * FX_RATE) + ADMIN_FEES;
                 const card = document.createElement('div');
-                card.className = `p-7 rounded-[2.5rem] border-2 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm transition-all ${member.paid ? 'bg-green-50 border-green-200' : 'bg-white border-slate-100'}`;
-
+                card.className = p-8 rounded-[2.5rem] border-2 flex flex-col md:flex-row justify-between items-center gap-6 transition-all ${m.isPaid ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100 shadow-md'};
                 card.innerHTML = `
                     <div class="flex-1 text-center md:text-right">
                         <div class="flex items-center justify-center md:justify-start gap-3 mb-2">
-                            <span class="font-black text-slate-800 text-lg uppercase tracking-tight underline decoration-yellow-400 decoration-2">${member.name}</span>
-                            ${member.paid ? '<span class="bg-green-600 text-white text-[9px] px-4 py-1 rounded-full font-black flex items-center gap-1 shadow-sm"><i data-lucide="check" class="w-3 h-3"></i> تم السداد</span>' : ''}
+                            <span class="font-black text-gray-800 text-xl">${m.fullName}</span>
+                            ${m.isPaid ? '<span class="bg-green-600 text-white text-[10px] px-4 py-1 rounded-full font-black flex items-center gap-1"><i data-lucide="check" class="w-3 h-3"></i> تم الدفع</span>' : ''}
                         </div>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase italic tracking-tighter">Passeport: ${member.pass} | Grant: <b class="text-blue-700 text-xs">${member.grant}€</b></p>
-                        <p class="text-2xl font-black mt-2 text-slate-900 tracking-tighter">${totalCost.toLocaleString()} <span class="text-sm font-bold opacity-30">DZD</span></p>
+                        <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider italic">Pass: ${m.pass} | Grant: <b class="text-blue-700 font-black">${m.amount}€</b></p>
+                        <p class="text-2xl font-black mt-3 text-gray-900">${totalDzdCost.toLocaleString()} <span class="text-xs opacity-50">DZD</span></p>
                     </div>
                     <div class="flex gap-2">
-                        ${!member.paid ?
-                        `<button onclick="openFinalPayUI(${index})" class="bg-blue-600 text-white px-10 py-4 rounded-[1.5rem] font-black text-xs shadow-xl shadow-blue-100 hover:bg-blue-700 active:scale-95 transition-all">سداد الرسوم</button>` :
-                        `<button onclick="genMemberReceiptPDF(${index})" class="bg-slate-800 text-white px-8 py-4 rounded-[1.5rem] font-black text-xs flex items-center gap-2 hover:bg-black transition-all shadow-lg shadow-slate-200"><i data-lucide="file-down" class="w-4 h-4"></i> تحميل الوصل</button>`
-                    }
+                        ${!m.isPaid ? 
+                            <button onclick="openPaymentMethods(${idx})" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-sm shadow-xl shadow-blue-100 hover:bg-blue-700 active:scale-95 transition-all">دفع الرسوم</button> :
+                            <button onclick="generateSinglePDF(${idx})" class="bg-gray-800 text-white px-8 py-4 rounded-2xl font-black text-sm flex items-center gap-2 hover:bg-black transition-all shadow-lg"><i data-lucide="download" class="w-4 h-4"></i> تحميل الوصل</button>
+                        }
                     </div>
                 `;
                 container.appendChild(card);
@@ -553,75 +472,101 @@
             lucide.createIcons();
         }
 
-        // 5. السداد
-        function openFinalPayUI(idx) {
-            activeProcessingIdx = idx;
-            const m = globalMembers[idx];
-            const price = (m.grant * BANK_FX) + BANK_EXTRA;
-            document.getElementById('txt-price-label').innerText = price.toLocaleString() + " DZD";
-            document.getElementById('payment-modal-ui').classList.remove('hidden-v');
-            document.getElementById('card-form-injection').classList.add('hidden-v');
+        function openPaymentMethods(idx) {
+            activeProcessingId = idx;
+            const m = appMembersData[idx];
+            const total = (m.amount * FX_RATE) + ADMIN_FEES;
+            
+            // Show custom choice modal logic simplified by opening Dahabia as default for demo or custom modal
+            // We will use a simple prompt for the sake of single-file logic, but here we open the custom gateway
+            // Let's open the choice
+            const choice = confirm("اضغط OK للدفع بالذهبية، أو Cancel للدفع ببطاقة CIB");
+            if(choice) {
+                document.getElementById('dahabia-amt').innerText = total.toLocaleString() + " DZD";
+                document.getElementById('in-dahabia-name').value = m.fullName;
+                document.getElementById('gateway-dahabia').classList.remove('hidden-page');
+            } else {
+                document.getElementById('cib-amt').innerText = total.toLocaleString() + " DZD";
+                document.getElementById('in-cib-name').value = m.fullName;
+                document.getElementById('gateway-cib').classList.remove('hidden-page');
+            }
+            lucide.createIcons();
         }
 
-        function setMethod(t) {
-            activePayType = t;
-            document.getElementById('bg-dahabia').className = `border-2 rounded-2xl p-5 flex flex-col items-center gap-2 ${t === 'dahabia' ? 'border-yellow-400 bg-yellow-50 shadow-inner' : 'border-slate-100 bg-slate-50'}`;
-            document.getElementById('bg-cib').className = `border-2 rounded-2xl p-5 flex flex-col items-center gap-2 ${t === 'cib' ? 'border-blue-600 bg-blue-50 shadow-inner' : 'border-slate-100 bg-slate-50'}`;
-            document.getElementById('card-form-injection').classList.remove('hidden-v');
+        function closeGateway() {
+            document.getElementById('gateway-dahabia').classList.add('hidden-page');
+            document.getElementById('gateway-cib').classList.add('hidden-page');
         }
 
-        function closePayUI() { document.getElementById('payment-modal-ui').classList.add('hidden-v'); }
-
-        function finalizeUserPayment() {
-            const cardIn = document.getElementById('inp-card-ui').value;
-            if (cardIn.length < 16) return alert("يرجى إدخال 16 رقم الخاص بالبطاقة");
-
-            showLoaderUI("جاري تأمين المعاملة البنكية...");
+        function submitPayment(type) {
+            const cardNum = document.getElementById(in-${type}-card).value;
+            if(cardNum.length < 16) return alert("يرجى إدخال رقم البطاقة كاملاً (16 رقم)");
+            
+            toggleMainLoader(true, "جاري التحقق من رصيد البطاقة ومعالجة العملية...");
             setTimeout(() => {
-                globalMembers[activeProcessingIdx].paid = true;
-                globalMembers[activeProcessingIdx].method = activePayType === 'dahabia' ? "البطاقة الذهبية" : "بطاقة CIB بنكية";
-                hideLoaderUI();
-                closePayUI();
-                renderPaymentDashboard(); // إعادة بناء اللوحة لتحديث الحالة
-            }, 2000);
+                appMembersData[activeProcessingId].isPaid = true;
+                appMembersData[activeProcessingId].payMethodUsed = type === 'dahabia' ? "البطاقة الذهبية" : "بطاقة CIB البنكية";
+                toggleMainLoader(false);
+                closeGateway();
+                renderPaymentGrid();
+            }, 2500);
         }
 
-        // 6. PDF
-        function genMemberReceiptPDF(id) {
-            const m = globalMembers[id];
-            const refID = "X-CH-" + Math.floor(Math.random() * 900000 + 100000).toString().toUpperCase();
-
-            document.getElementById('p-ref-top').innerText = refID;
-            document.getElementById('p-ref').innerText = refID;
-            document.getElementById('p-name').innerText = m.name;
-            document.getElementById('p-pass').innerText = m.pass;
-            document.getElementById('p-age').innerText = m.age;
-            document.getElementById('p-expiry').innerText = m.expiry;
-            document.getElementById('p-eur').innerText = m.grant;
-            document.getElementById('p-dzd').innerText = ((m.grant * BANK_FX) + BANK_EXTRA).toLocaleString() + " DZD";
-            document.getElementById('p-point').innerText = document.getElementById('ui-point-sel').value;
-            document.getElementById('p-method').innerText = m.method;
-
+        function generateSinglePDF(idx) {
+            const m = appMembersData[idx];
+            const transactionRef = "BA-TXN-" + Math.floor(Math.random()*900000+100000);
+            
+            // Populate Printer Template
+            document.getElementById('r-ref-top').innerText = transactionRef;
+            document.getElementById('r-ref').innerText = transactionRef;
+            document.getElementById('r-name').innerText = m.fullName;
+            document.getElementById('r-pass').innerText = m.pass;
+            document.getElementById('r-age').innerText = m.age;
+            document.getElementById('r-expiry').innerText = m.expiry;
+            document.getElementById('r-eur').innerText = m.amount;
+            document.getElementById('r-dzd').innerText = ((m.amount * FX_RATE) + ADMIN_FEES).toLocaleString() + " دج";
+            document.getElementById('r-point').innerText = document.getElementById('sel-cross-point').value;
+            document.getElementById('r-method').innerText = m.payMethodUsed;
+            
             const now = new Date();
-            const future = new Date(); future.setDate(now.getDate() + 7);
-            document.getElementById('p-date').innerText = now.toLocaleString('ar-DZ');
-            document.getElementById('p-out').innerText = now.toLocaleDateString('ar-DZ');
-            document.getElementById('p-in').innerText = future.toLocaleDateString('ar-DZ');
+            const returnDate = new Date(); returnDate.setDate(now.getDate() + 7);
+            document.getElementById('r-date').innerText = now.toLocaleString('ar-DZ');
+            document.getElementById('r-out').innerText = now.toLocaleDateString('ar-DZ');
+            document.getElementById('r-in').innerText = returnDate.toLocaleDateString('ar-DZ');
+            
+            // Barcode
+            const bArea = document.getElementById('barcode-area');
+            bArea.innerHTML = Array(35).fill().map(() => <div class="stripe ${Math.random()>0.5?'w':''}"></div><div class="stripe s"></div>).join('');
+            document.getElementById('barcode-txt').innerText = m.pass;
 
-            const bar = document.getElementById('p-barcode-ui');
-            bar.innerHTML = Array(35).fill().map(() => `<div class="bar-line ${Math.random() > 0.5 ? 'w' : ''}"></div><div class="bar-line s"></div>`).join('');
-            document.getElementById('p-barcode-text').innerText = m.pass;
+            // PDF Execution
+            const element = document.getElementById('receipt-print-area');
+            const options = {
+                margin: 0,
+                filename: Reçu_Monnaie_${m.pass}.pdf,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 3, useCORS: true, letterRendering: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
 
-            document.getElementById('pdf-root-hidden').classList.remove('hidden');
-            const opt = { margin: 0, filename: `X-CHANGE_${m.pass}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 3, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4' } };
-            html2pdf().set(opt).from(document.getElementById('pdf-node-target')).save().then(() => {
-                document.getElementById('pdf-root-hidden').classList.add('hidden');
+            // Important: Show wrapper temporarily to capture, then hide
+            const wrapper = document.getElementById('receipt-print-wrapper');
+            wrapper.classList.remove('hidden-page');
+            
+            html2pdf().set(options).from(element).save().then(() => {
+                wrapper.classList.add('hidden-page');
             });
         }
 
-        function showLoaderUI(t) { document.getElementById('loader-msg-ui').innerText = t; document.getElementById('loader-overlay-ui').classList.remove('hidden-v'); }
-        function hideLoaderUI() { document.getElementById('loader-overlay-ui').classList.add('hidden-v'); }
+        function toggleMainLoader(show, txt = "") { 
+            const loader = document.getElementById('main-loader');
+            if(show) {
+                document.getElementById('loader-status').innerText = txt;
+                loader.classList.remove('hidden-page');
+            } else {
+                loader.classList.add('hidden-page');
+            }
+        }
     </script>
 </body>
-
 </html>
