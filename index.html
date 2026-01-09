@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +10,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f3f4f6; color: #1e293b; overflow-x: hidden; }
-        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f3f4f6;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
         /* شاشة الترحيب */
         #page-welcome {
-            background: linear-gradient(to bottom, rgba(0, 51, 102, 0.8), rgba(0, 0, 0, 0.6)), 
-                        url('https://images.unsplash.com/photo-1542281286-9e0a16bb7366?q=80&w=2070&auto=format&fit=crop');
+            background: linear-gradient(to bottom, rgba(0, 51, 102, 0.8), rgba(0, 0, 0, 0.6)),
+                url('https://images.unsplash.com/photo-1542281286-9e0a16bb7366?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             height: 100vh;
@@ -65,40 +71,77 @@
             position: relative;
             box-sizing: border-box;
         }
+
         .receipt-inner {
             border: 2px solid #1e3a8a;
             padding: 15mm;
             height: 100%;
             position: relative;
         }
-        
+
         .barcode-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-top: 20px;
         }
+
         .barcode-stripes {
             display: flex;
             height: 40px;
             gap: 1.5px;
         }
-        .stripe { background: black; width: 2px; }
-        .stripe.w { width: 5px; }
-        .stripe.s { background: transparent; width: 2px; }
 
-        .spinner { 
-            border: 3px solid #f3f3f3; border-top: 3px solid #1e40af; 
-            border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; 
+        .stripe {
+            background: black;
+            width: 2px;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .hidden-page { display: none !important; }
-        .fade-out { opacity: 0; visibility: hidden; }
 
-        @media print { .no-print { display: none !important; } }
+        .stripe.w {
+            width: 5px;
+        }
+
+        .stripe.s {
+            background: transparent;
+            width: 2px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1e40af;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden-page {
+            display: none !important;
+        }
+
+        .fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <!-- الصفحة 0: الترحيب -->
@@ -122,13 +165,15 @@
                     <i data-lucide="landmark" class="w-7 h-7 text-yellow-400"></i>
                     <h1 class="text-lg font-black tracking-tight">بنك الجزائر | BANQUE D'ALGERIE</h1>
                 </div>
-                <div class="text-[9px] bg-blue-800 px-3 py-1 rounded border border-blue-700 font-bold uppercase">الخدمات المصرفية الرقمية</div>
+                <div class="text-[9px] bg-blue-800 px-3 py-1 rounded border border-blue-700 font-bold uppercase">الخدمات
+                    المصرفية الرقمية</div>
             </div>
         </header>
 
         <main class="container mx-auto px-4 py-8 max-w-2xl">
             <!-- Stepper -->
-            <div id="stepper" class="flex justify-between mb-8 no-print bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+            <div id="stepper"
+                class="flex justify-between mb-8 no-print bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                 <div id="step-1" class="flex flex-col items-center gap-1 text-blue-600 font-bold">
                     <i data-lucide="users"></i><span class="text-[9px]">النوع</span>
                 </div>
@@ -146,12 +191,20 @@
             <div id="view-1" class="view space-y-6">
                 <h2 class="text-2xl font-black text-center text-gray-800">اختيار نوع الطلب</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div onclick="selectAppType('individual')" class="bg-white p-8 rounded-3xl border-2 border-transparent hover:border-blue-600 cursor-pointer shadow-sm hover:shadow-xl transition-all flex flex-col items-center group">
-                        <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all"><i data-lucide="user" class="w-8 h-8"></i></div>
+                    <div onclick="selectAppType('individual')"
+                        class="bg-white p-8 rounded-3xl border-2 border-transparent hover:border-blue-600 cursor-pointer shadow-sm hover:shadow-xl transition-all flex flex-col items-center group">
+                        <div
+                            class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                            <i data-lucide="user" class="w-8 h-8"></i>
+                        </div>
                         <span class="text-lg font-black text-gray-700">طلب فردي</span>
                     </div>
-                    <div onclick="selectAppType('family')" class="bg-white p-8 rounded-3xl border-2 border-transparent hover:border-green-600 cursor-pointer shadow-sm hover:shadow-xl transition-all flex flex-col items-center group">
-                        <div class="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition-all"><i data-lucide="users" class="w-8 h-8"></i></div>
+                    <div onclick="selectAppType('family')"
+                        class="bg-white p-8 rounded-3xl border-2 border-transparent hover:border-green-600 cursor-pointer shadow-sm hover:shadow-xl transition-all flex flex-col items-center group">
+                        <div
+                            class="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition-all">
+                            <i data-lucide="users" class="w-8 h-8"></i>
+                        </div>
                         <span class="text-lg font-black text-gray-700">طلب عائلي</span>
                     </div>
                 </div>
@@ -161,31 +214,42 @@
             <div id="view-2" class="view hidden-page space-y-6">
                 <h2 class="text-xl font-bold border-r-4 border-blue-600 pr-3">بيانات جوازات السفر</h2>
                 <div id="passport-upload-list" class="space-y-4"></div>
-                
-                <div id="crossing-box" class="hidden bg-white p-6 rounded-3xl border border-blue-100 shadow-sm space-y-6 animate-in slide-in-from-bottom duration-500">
-                    <h3 class="font-bold text-blue-900 flex items-center gap-2"><i data-lucide="map-pin"></i> مكان العبور والوجهة</h3>
+
+                <div id="crossing-box"
+                    class="hidden bg-white p-6 rounded-3xl border border-blue-100 shadow-sm space-y-6 animate-in slide-in-from-bottom duration-500">
+                    <h3 class="font-bold text-blue-900 flex items-center gap-2"><i data-lucide="map-pin"></i> مكان
+                        العبور والوجهة</h3>
                     <div class="grid grid-cols-2 gap-4">
-                        <select id="sel-cross-type" onchange="loadCrossingPoints()" class="p-3 border rounded-xl outline-none bg-gray-50 text-sm font-bold">
+                        <select id="sel-cross-type" onchange="loadCrossingPoints()"
+                            class="p-3 border rounded-xl outline-none bg-gray-50 text-sm font-bold">
                             <option value="">نوع المعبر</option>
-                            <option value="air">جوي</option><option value="sea">بحري</option><option value="land">بري</option>
+                            <option value="air">جوي</option>
+                            <option value="sea">بحري</option>
+                            <option value="land">بري</option>
                         </select>
-                        <select id="sel-cross-point" disabled class="p-3 border rounded-xl outline-none bg-gray-50 text-sm font-bold">
+                        <select id="sel-cross-point" disabled
+                            class="p-3 border rounded-xl outline-none bg-gray-50 text-sm font-bold">
                             <option value="">المعبر المحدد</option>
                         </select>
                     </div>
                 </div>
-                <button id="btn-goto-3" disabled onclick="toView3()" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black shadow-xl disabled:opacity-30">تأكيد البيانات والانتقال</button>
+                <button id="btn-goto-3" disabled onclick="toView3()"
+                    class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black shadow-xl disabled:opacity-30">تأكيد
+                    البيانات والانتقال</button>
             </div>
 
             <!-- Page 3: Individual Payment List -->
             <div id="view-3" class="view hidden-page space-y-6">
                 <div class="bg-blue-50 p-6 rounded-3xl border border-blue-100">
                     <h2 class="text-lg font-black text-blue-900">جدول سداد الرسوم</h2>
-                    <p class="text-xs text-blue-600 font-bold uppercase italic">يجب الدفع لكل فرد بشكل مستقل لإصدار الوصل الخاص به</p>
+                    <p class="text-xs text-blue-600 font-bold uppercase italic">يجب الدفع لكل فرد بشكل مستقل لإصدار
+                        الوصل الخاص به</p>
                 </div>
-                
+
                 <div id="payment-items-container" class="space-y-4"></div>
-                <button onclick="location.reload()" class="w-full py-4 text-gray-400 font-bold hover:text-red-500 transition-colors no-print">العودة للرئيسية</button>
+                <button onclick="location.reload()"
+                    class="w-full py-4 text-gray-400 font-bold hover:text-red-500 transition-colors no-print">العودة
+                    للرئيسية</button>
             </div>
         </main>
     </div>
@@ -209,33 +273,44 @@
                 </div>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1">NUMÉRO DE CARTE / رقم البطاقة</label>
-                        <input type="text" id="in-dahabia-card" placeholder="6073 XXXX XXXX XXXX" maxlength="16" class="w-full p-4 border rounded-xl font-mono text-center text-lg focus:ring-2 ring-yellow-400 outline-none">
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">NUMÉRO DE CARTE / رقم
+                            البطاقة</label>
+                        <input type="text" id="in-dahabia-card" placeholder="6073 XXXX XXXX XXXX" maxlength="16"
+                            class="w-full p-4 border rounded-xl font-mono text-center text-lg focus:ring-2 ring-yellow-400 outline-none">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 mb-1">DATE EXP / تاريخ الانتهاء</label>
-                            <input type="text" placeholder="MM/YY" class="w-full p-4 border rounded-xl text-center outline-none">
+                            <label class="block text-[10px] font-bold text-gray-400 mb-1">DATE EXP / تاريخ
+                                الانتهاء</label>
+                            <input type="text" placeholder="MM/YY"
+                                class="w-full p-4 border rounded-xl text-center outline-none">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-400 mb-1">CVV2 / الرمز السري</label>
-                            <input type="password" placeholder="123" maxlength="3" class="w-full p-4 border rounded-xl text-center outline-none">
+                            <input type="password" placeholder="123" maxlength="3"
+                                class="w-full p-4 border rounded-xl text-center outline-none">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1">NOM DU TITULAIRE / اسم صاحب البطاقة</label>
-                        <input type="text" id="in-dahabia-name" placeholder="NOM PRENOM" class="w-full p-4 border rounded-xl uppercase font-bold text-sm">
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">NOM DU TITULAIRE / اسم صاحب
+                            البطاقة</label>
+                        <input type="text" id="in-dahabia-name" placeholder="NOM PRENOM"
+                            class="w-full p-4 border rounded-xl uppercase font-bold text-sm">
                     </div>
                 </div>
-                <button onclick="submitPayment('dahabia')" class="w-full py-5 bg-yellow-400 text-[#003366] font-black rounded-xl text-lg shadow-xl hover:bg-yellow-500 transition-all">VALIDER / تأكيد</button>
-                <button onclick="closeGateway()" class="w-full text-xs text-gray-400 font-bold mt-2">ANNULER / إلغاء</button>
+                <button onclick="submitPayment('dahabia')"
+                    class="w-full py-5 bg-yellow-400 text-[#003366] font-black rounded-xl text-lg shadow-xl hover:bg-yellow-500 transition-all">VALIDER
+                    / تأكيد</button>
+                <button onclick="closeGateway()" class="w-full text-xs text-gray-400 font-bold mt-2">ANNULER /
+                    إلغاء</button>
             </div>
         </div>
     </div>
 
     <!-- بوابة الدفع: CIB -->
     <div id="gateway-cib" class="hidden-page fixed inset-0 bg-gray-50 z-[200] overflow-y-auto no-print">
-        <div class="max-w-md mx-auto my-10 bg-white rounded-2xl shadow-2xl overflow-hidden border-t-8 border-blue-800 border-x border-b border-gray-200">
+        <div
+            class="max-w-md mx-auto my-10 bg-white rounded-2xl shadow-2xl overflow-hidden border-t-8 border-blue-800 border-x border-b border-gray-200">
             <div class="bg-blue-800 p-6 text-white text-center">
                 <h3 class="font-black text-2xl italic">SATIM - CIB</h3>
                 <p class="text-[9px] opacity-60 uppercase tracking-widest mt-1">Plateforme de Paiement Sécurisée</p>
@@ -247,26 +322,34 @@
                 </div>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1">NUMÉRO DE CARTE CIB / رقم البطاقة</label>
-                        <input type="text" id="in-cib-card" placeholder="XXXX XXXX XXXX XXXX" maxlength="16" class="w-full p-5 border rounded-xl font-mono text-center text-xl focus:ring-2 ring-blue-600 outline-none">
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">NUMÉRO DE CARTE CIB / رقم
+                            البطاقة</label>
+                        <input type="text" id="in-cib-card" placeholder="XXXX XXXX XXXX XXXX" maxlength="16"
+                            class="w-full p-5 border rounded-xl font-mono text-center text-xl focus:ring-2 ring-blue-600 outline-none">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <input type="text" placeholder="MM/YY" class="p-5 border rounded-xl text-center">
                         <input type="password" placeholder="CVV" class="p-5 border rounded-xl text-center">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1">TITULAIRE DE LA CARTE / صاحب البطاقة</label>
-                        <input type="text" id="in-cib-name" placeholder="NOM COMPLET" class="w-full p-5 border rounded-xl uppercase font-bold text-sm">
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1">TITULAIRE DE LA CARTE / صاحب
+                            البطاقة</label>
+                        <input type="text" id="in-cib-name" placeholder="NOM COMPLET"
+                            class="w-full p-5 border rounded-xl uppercase font-bold text-sm">
                     </div>
                 </div>
-                <button onclick="submitPayment('cib')" class="w-full py-5 bg-blue-800 text-white font-black rounded-xl text-xl shadow-xl hover:bg-blue-900 transition-all">PAYER MAINTENANT / دفع</button>
-                <button onclick="closeGateway()" class="w-full text-[10px] text-gray-400 font-bold uppercase mt-4">Abandonner la transaction</button>
+                <button onclick="submitPayment('cib')"
+                    class="w-full py-5 bg-blue-800 text-white font-black rounded-xl text-xl shadow-xl hover:bg-blue-900 transition-all">PAYER
+                    MAINTENANT / دفع</button>
+                <button onclick="closeGateway()"
+                    class="w-full text-[10px] text-gray-400 font-bold uppercase mt-4">Abandonner la transaction</button>
             </div>
         </div>
     </div>
 
     <!-- Loader -->
-    <div id="main-loader" class="hidden-page fixed inset-0 bg-white/95 z-[300] flex flex-col items-center justify-center">
+    <div id="main-loader"
+        class="hidden-page fixed inset-0 bg-white/95 z-[300] flex flex-col items-center justify-center">
         <div class="spinner mb-4 w-12 h-12"></div>
         <p id="loader-status" class="font-black text-blue-900 text-lg">جاري تشفير البيانات ومعالجة الدفع...</p>
     </div>
@@ -282,7 +365,8 @@
                     </div>
                     <div class="text-center">
                         <h2 class="text-2xl font-black text-blue-900">وصل سداد منحة السفر</h2>
-                        <p class="text-[10px] font-bold tracking-[0.2em] uppercase mt-1 italic underline">ALLOCATION VOYAGE - QUITTANCE OFFICIELLE</p>
+                        <p class="text-[10px] font-bold tracking-[0.2em] uppercase mt-1 italic underline">ALLOCATION
+                            VOYAGE - QUITTANCE OFFICIELLE</p>
                     </div>
                     <div class="text-[10px] font-bold text-left italic">
                         Document Sécurisé<br>
@@ -294,26 +378,33 @@
                     <p><b>رقم المرجع (ID):</b> <span id="r-ref" class="font-black text-blue-800"></span></p>
                     <p class="text-left"><b>تاريخ العملية:</b> <span id="r-date"></span></p>
                     <p><b>تاريخ خروج الرحلة:</b> <span id="r-out" class="text-green-700 font-bold"></span></p>
-                    <p class="text-left"><b>تاريخ عودة الرحلة:</b> <span id="r-in" class="text-red-700 font-bold"></span></p>
+                    <p class="text-left"><b>تاريخ عودة الرحلة:</b> <span id="r-in"
+                            class="text-red-700 font-bold"></span></p>
                     <p><b>نقطة العبور:</b> <span id="r-point" class="font-bold underline"></span></p>
-                    <p class="text-left"><b>وسيلة الدفع:</b> <span id="r-method" class="font-bold text-blue-600"></span></p>
+                    <p class="text-left"><b>وسيلة الدفع:</b> <span id="r-method" class="font-bold text-blue-600"></span>
+                    </p>
                 </div>
 
                 <div class="mb-10">
-                    <h4 class="text-sm font-black text-blue-900 mb-5 border-r-4 border-blue-900 pr-4">المعلومات الشخصية المستخرجة:</h4>
-                    <div class="grid grid-cols-2 gap-y-6 text-[13px] p-10 border-2 border-dashed rounded-[3rem] bg-white shadow-sm relative overflow-hidden">
+                    <h4 class="text-sm font-black text-blue-900 mb-5 border-r-4 border-blue-900 pr-4">المعلومات الشخصية
+                        المستخرجة:</h4>
+                    <div
+                        class="grid grid-cols-2 gap-y-6 text-[13px] p-10 border-2 border-dashed rounded-[3rem] bg-white shadow-sm relative overflow-hidden">
                         <p><b>الاسم واللقب:</b> <span id="r-name" class="font-bold"></span></p>
                         <p><b>رقم جواز السفر:</b> <span id="r-pass" class="font-mono font-black"></span></p>
                         <p><b>تاريخ انتهاء الجواز:</b> <span id="r-expiry"></span></p>
                         <p><b>الجنسية:</b> <span id="r-nation">جزائرية (DZ)</span></p>
                         <p><b>العمر المستخرج:</b> <span id="r-age"></span> سنة</p>
-                        <p class="text-blue-900 text-2xl mt-4"><b>قيمة المنحة الممنوحة:</b> <span id="r-eur" class="font-black underline"></span> €</p>
+                        <p class="text-blue-900 text-2xl mt-4"><b>قيمة المنحة الممنوحة:</b> <span id="r-eur"
+                                class="font-black underline"></span> €</p>
                     </div>
                 </div>
 
-                <div class="bg-blue-900 text-white p-8 rounded-[2rem] flex justify-between items-center mb-10 shadow-2xl">
+                <div
+                    class="bg-blue-900 text-white p-8 rounded-[2rem] flex justify-between items-center mb-10 shadow-2xl">
                     <div>
-                        <p class="text-[11px] opacity-70 uppercase tracking-widest font-bold">المبلغ المدفوع بالدينار (DZD)</p>
+                        <p class="text-[11px] opacity-70 uppercase tracking-widest font-bold">المبلغ المدفوع بالدينار
+                            (DZD)</p>
                         <h3 id="r-dzd" class="text-4xl font-black text-yellow-400"></h3>
                     </div>
                     <div class="text-left border-r-2 pr-8 border-white/20">
@@ -325,11 +416,13 @@
                 <div class="flex justify-between items-end mt-16">
                     <div class="barcode-container">
                         <div id="barcode-area" class="barcode-stripes mb-2"></div>
-                        <span id="barcode-txt" class="text-[11px] font-mono font-bold tracking-[0.5em] text-gray-500"></span>
+                        <span id="barcode-txt"
+                            class="text-[11px] font-mono font-bold tracking-[0.5em] text-gray-500"></span>
                     </div>
                     <div class="text-center">
                         <i data-lucide="qr-code" class="w-16 h-16 opacity-20 mx-auto mb-2"></i>
-                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">Banque d'Algérie<br>Official Stamp</p>
+                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">Banque
+                            d'Algérie<br>Official Stamp</p>
                     </div>
                 </div>
             </div>
@@ -367,23 +460,23 @@
 
         function changeView(n) {
             document.querySelectorAll('.view').forEach(v => v.classList.add('hidden-page'));
-            document.getElementById(view-${n}).classList.remove('hidden-page');
-            
+            document.getElementById(`view-${n}`).classList.remove('hidden-page');
+
             // Stepper Control
-            if(n === 2) document.getElementById('step-2').classList.add('text-blue-600', 'font-bold');
-            if(n === 3) {
+            if (n === 2) document.getElementById('step-2').classList.add('text-blue-600', 'font-bold');
+            if (n === 3) {
                 document.getElementById('step-3').classList.add('text-blue-600', 'font-bold');
                 document.getElementById('step-2').classList.replace('text-blue-600', 'text-green-600');
             }
-            window.scrollTo(0,0);
+            window.scrollTo(0, 0);
         }
 
         function renderPassportUploads() {
             const list = document.getElementById('passport-upload-list');
             list.innerHTML = '';
-            const schema = currentAppType === 'individual' ? [{id:0, lbl:'المسافر الرئيسي'}] : 
-                [{id:0, lbl:'الأب'}, {id:1, lbl:'الأم'}, {id:2, lbl:'الابن الأول'}, {id:3, lbl:'الابن الثاني'}];
-            
+            const schema = currentAppType === 'individual' ? [{ id: 0, lbl: 'المسافر الرئيسي' }] :
+                [{ id: 0, lbl: 'الأب' }, { id: 1, lbl: 'الأم' }, { id: 2, lbl: 'الابن الأول' }, { id: 3, lbl: 'الابن الثاني' }];
+
             schema.forEach(s => {
                 const div = document.createElement('div');
                 div.className = "bg-white p-6 rounded-[2rem] border shadow-sm flex justify-between items-center group hover:border-blue-500 transition-all";
@@ -402,22 +495,22 @@
         }
 
         function performOcrMock(idx, lbl) {
-            const statusLabel = document.getElementById(ocr-st-${idx});
+            const statusLabel = document.getElementById(`ocr-st-${idx}`);
             statusLabel.innerHTML = '<span class="flex items-center gap-2">جاري استخراج البيانات... <div class="spinner"></div></span>';
             setTimeout(() => {
                 const age = (idx >= 2) ? 12 : 45;
                 const passportNumber = "DZ" + Math.floor(1000000 + Math.random() * 9000000);
                 const grantEuro = age >= 19 ? 750 : 300;
-                appMembersData[idx] = { 
-                    id: idx, label: lbl, fullName: lbl + " فلان بن فلان", 
-                    pass: passportNumber, age: age, expiry: "14/08/2032", 
-                    amount: grantEuro, isPaid: false, payMethodUsed: '' 
+                appMembersData[idx] = {
+                    id: idx, label: lbl, fullName: lbl + " فلان بن فلان",
+                    pass: passportNumber, age: age, expiry: "14/08/2032",
+                    amount: grantEuro, isPaid: false, payMethodUsed: ''
                 };
                 statusLabel.innerText = "تم التحقق من الجواز: " + passportNumber + " (العمر: " + age + " سنة)";
                 statusLabel.className = "text-[11px] text-green-600 font-black";
-                
+
                 const required = currentAppType === 'individual' ? 1 : 4;
-                if(appMembersData.filter(m => m).length === required) {
+                if (appMembersData.filter(m => m).length === required) {
                     document.getElementById('crossing-box').classList.remove('hidden');
                     document.getElementById('btn-goto-3').disabled = false;
                 }
@@ -428,7 +521,7 @@
             const type = document.getElementById('sel-cross-type').value;
             const pointSelect = document.getElementById('sel-cross-point');
             pointSelect.innerHTML = '<option value="">المعبر المحدد</option>';
-            if(type && CROSS_POINTS[type]) {
+            if (type && CROSS_POINTS[type]) {
                 pointSelect.disabled = false;
                 CROSS_POINTS[type].forEach(pt => {
                     const opt = document.createElement('option');
@@ -439,7 +532,7 @@
         }
 
         function toView3() {
-            if(!document.getElementById('sel-cross-point').value) return alert("يرجى اختيار مكان العبور المفضل");
+            if (!document.getElementById('sel-cross-point').value) return alert("يرجى اختيار مكان العبور المفضل");
             changeView(3);
             renderPaymentGrid();
         }
@@ -450,7 +543,7 @@
             appMembersData.forEach((m, idx) => {
                 const totalDzdCost = (m.amount * FX_RATE) + ADMIN_FEES;
                 const card = document.createElement('div');
-                card.className = p-8 rounded-[2.5rem] border-2 flex flex-col md:flex-row justify-between items-center gap-6 transition-all ${m.isPaid ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100 shadow-md'};
+                card.className = `p-8 rounded-[2.5rem] border-2 flex flex-col md:flex-row justify-between items-center gap-6 transition-all ${m.isPaid ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100 shadow-md'}`;
                 card.innerHTML = `
                     <div class="flex-1 text-center md:text-right">
                         <div class="flex items-center justify-center md:justify-start gap-3 mb-2">
@@ -461,10 +554,10 @@
                         <p class="text-2xl font-black mt-3 text-gray-900">${totalDzdCost.toLocaleString()} <span class="text-xs opacity-50">DZD</span></p>
                     </div>
                     <div class="flex gap-2">
-                        ${!m.isPaid ? 
-                            <button onclick="openPaymentMethods(${idx})" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-sm shadow-xl shadow-blue-100 hover:bg-blue-700 active:scale-95 transition-all">دفع الرسوم</button> :
-                            <button onclick="generateSinglePDF(${idx})" class="bg-gray-800 text-white px-8 py-4 rounded-2xl font-black text-sm flex items-center gap-2 hover:bg-black transition-all shadow-lg"><i data-lucide="download" class="w-4 h-4"></i> تحميل الوصل</button>
-                        }
+                        ${!m.isPaid ?
+                        `<button onclick="openPaymentMethods(${idx})" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-sm shadow-xl shadow-blue-100 hover:bg-blue-700 active:scale-95 transition-all">دفع الرسوم</button>` :
+                        `<button onclick="generateSinglePDF(${idx})" class="bg-gray-800 text-white px-8 py-4 rounded-2xl font-black text-sm flex items-center gap-2 hover:bg-black transition-all shadow-lg"><i data-lucide="download" class="w-4 h-4"></i> تحميل الوصل</button>`
+                    }
                     </div>
                 `;
                 container.appendChild(card);
@@ -476,12 +569,12 @@
             activeProcessingId = idx;
             const m = appMembersData[idx];
             const total = (m.amount * FX_RATE) + ADMIN_FEES;
-            
+
             // Show custom choice modal logic simplified by opening Dahabia as default for demo or custom modal
             // We will use a simple prompt for the sake of single-file logic, but here we open the custom gateway
             // Let's open the choice
             const choice = confirm("اضغط OK للدفع بالذهبية، أو Cancel للدفع ببطاقة CIB");
-            if(choice) {
+            if (choice) {
                 document.getElementById('dahabia-amt').innerText = total.toLocaleString() + " DZD";
                 document.getElementById('in-dahabia-name').value = m.fullName;
                 document.getElementById('gateway-dahabia').classList.remove('hidden-page');
@@ -499,9 +592,9 @@
         }
 
         function submitPayment(type) {
-            const cardNum = document.getElementById(in-${type}-card).value;
-            if(cardNum.length < 16) return alert("يرجى إدخال رقم البطاقة كاملاً (16 رقم)");
-            
+            const cardNum = document.getElementById(`in-${type}-card`).value;
+            if (cardNum.length < 16) return alert("يرجى إدخال رقم البطاقة كاملاً (16 رقم)");
+
             toggleMainLoader(true, "جاري التحقق من رصيد البطاقة ومعالجة العملية...");
             setTimeout(() => {
                 appMembersData[activeProcessingId].isPaid = true;
@@ -514,8 +607,8 @@
 
         function generateSinglePDF(idx) {
             const m = appMembersData[idx];
-            const transactionRef = "BA-TXN-" + Math.floor(Math.random()*900000+100000);
-            
+            const transactionRef = "BA-TXN-" + Math.floor(Math.random() * 900000 + 100000);
+
             // Populate Printer Template
             document.getElementById('r-ref-top').innerText = transactionRef;
             document.getElementById('r-ref').innerText = transactionRef;
@@ -527,23 +620,23 @@
             document.getElementById('r-dzd').innerText = ((m.amount * FX_RATE) + ADMIN_FEES).toLocaleString() + " دج";
             document.getElementById('r-point').innerText = document.getElementById('sel-cross-point').value;
             document.getElementById('r-method').innerText = m.payMethodUsed;
-            
+
             const now = new Date();
             const returnDate = new Date(); returnDate.setDate(now.getDate() + 7);
             document.getElementById('r-date').innerText = now.toLocaleString('ar-DZ');
             document.getElementById('r-out').innerText = now.toLocaleDateString('ar-DZ');
             document.getElementById('r-in').innerText = returnDate.toLocaleDateString('ar-DZ');
-            
+
             // Barcode
             const bArea = document.getElementById('barcode-area');
-            bArea.innerHTML = Array(35).fill().map(() => <div class="stripe ${Math.random()>0.5?'w':''}"></div><div class="stripe s"></div>).join('');
+            bArea.innerHTML = Array(35).fill().map(() => `<div class="stripe ${Math.random() > 0.5 ? 'w' : ''}"></div><div class="stripe s"></div>`).join('');
             document.getElementById('barcode-txt').innerText = m.pass;
 
             // PDF Execution
             const element = document.getElementById('receipt-print-area');
             const options = {
                 margin: 0,
-                filename: Reçu_Monnaie_${m.pass}.pdf,
+                filename: `Reçu_Monnaie_${m.pass}.pdf`,
                 image: { type: 'jpeg', quality: 1.0 },
                 html2canvas: { scale: 3, useCORS: true, letterRendering: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -552,15 +645,15 @@
             // Important: Show wrapper temporarily to capture, then hide
             const wrapper = document.getElementById('receipt-print-wrapper');
             wrapper.classList.remove('hidden-page');
-            
+
             html2pdf().set(options).from(element).save().then(() => {
                 wrapper.classList.add('hidden-page');
             });
         }
 
-        function toggleMainLoader(show, txt = "") { 
+        function toggleMainLoader(show, txt = "") {
             const loader = document.getElementById('main-loader');
-            if(show) {
+            if (show) {
                 document.getElementById('loader-status').innerText = txt;
                 loader.classList.remove('hidden-page');
             } else {
@@ -569,4 +662,5 @@
         }
     </script>
 </body>
+
 </html>
