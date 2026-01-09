@@ -1,23 +1,484 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>قصص بطلي - اجعل طفلك بطل قصته</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.1.1",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-    "react/": "https://aistudiocdn.com/react@^19.1.1/"
-  }
-}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة منحة السفر - بنك الجزائر</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; color: #1e293b; overflow-x: hidden; }
+        
+        #welcome-screen {
+            background: linear-gradient(to bottom, rgba(0, 51, 102, 0.85), rgba(0, 0, 0, 0.5)), 
+                        url('https://images.unsplash.com/photo-1554224155-169641357599?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .main-btn {
+            background: #facc15;
+            color: #003366;
+            padding: 1.5rem 3rem;
+            border-radius: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 900;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(250, 204, 21, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .receipt-container { 
+            background: white; 
+            padding: 40px; 
+            width: 210mm; 
+            min-height: 297mm; 
+            margin: auto; 
+            position: relative; 
+            border: 1px solid #e5e7eb;
+        }
+        
+        .barcode-lines { display: flex; height: 50px; align-items: stretch; justify-content: center; gap: 1.5px; }
+        .bar { background: black; width: 2px; }
+        .bar.w { width: 5px; }
+        .bar.s { background: transparent; width: 2px; }
+
+        .spinner { 
+            border: 3px solid #f3f3f3; 
+            border-top: 3px solid #1e40af; 
+            border-radius: 50%; 
+            width: 25px; 
+            height: 25px; 
+            animation: spin 1s linear infinite; 
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .page-hidden { display: none !important; }
+        .screen-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        @media print { .no-print { display: none !important; } }
+    </style>
 </head>
-<body class="bg-[#F0F2F5] font-sans">
-  <div id="root"></div>
-  <script type="module" src="./index.tsx"></script>
+<body class="min-h-screen">
+
+    <!-- شاشة الترحيب -->
+    <div id="welcome-screen">
+        <div class="text-center p-8 bg-white/10 backdrop-blur-md rounded-[3rem] border border-white/20 shadow-2xl max-w-lg w-full">
+            <i data-lucide="landmark" class="w-24 h-24 text-yellow-400 mx-auto mb-6"></i>
+            <h1 class="text-4xl font-black text-white mb-4 uppercase">بنك الجزائر</h1>
+            <p class="text-white/90 font-bold text-xl mb-10">المنصة الرقمية لمنحة السفر</p>
+            <button onclick="enterApp()" class="main-btn hover:scale-105">
+                <i data-lucide="plane-takeoff" class="w-8 h-8"></i>
+                طلب منحة السفر
+            </button>
+        </div>
+    </div>
+
+    <!-- التطبيق الرئيسي -->
+    <div id="main-app" class="page-hidden">
+        <header class="bg-blue-900 text-white p-4 shadow-xl no-print">
+            <div class="container mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="landmark" class="w-8 h-8 text-yellow-400"></i>
+                    <h1 class="text-lg font-black tracking-tighter">بنك الجزائر | BANQUE D'ALGERIE</h1>
+                </div>
+                <div class="text-[10px] bg-blue-800 px-3 py-1 rounded border border-blue-700 font-bold uppercase">e-services</div>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-4 py-8 max-w-3xl">
+            <!-- Stepper -->
+            <div id="stepper" class="flex justify-between mb-8 no-print bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+                <div id="step-1" class="flex flex-col items-center gap-1 text-blue-600 font-bold">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i><span class="text-[10px]">النوع</span>
+                </div>
+                <div class="flex-1 border-t-2 border-dashed mt-4 mx-4 border-gray-100"></div>
+                <div id="step-2" class="flex flex-col items-center gap-1 text-gray-300">
+                    <i data-lucide="file-digit" class="w-5 h-5"></i><span class="text-[10px]">البيانات</span>
+                </div>
+                <div class="flex-1 border-t-2 border-dashed mt-4 mx-4 border-gray-100"></div>
+                <div id="step-3" class="flex flex-col items-center gap-1 text-gray-400">
+                    <i data-lucide="credit-card" class="w-5 h-5"></i><span class="text-[10px]">الدفع</span>
+                </div>
+            </div>
+
+            <!-- PAGE 1: TYPE -->
+            <div id="page-1" class="page space-y-8">
+                <h2 class="text-2xl font-black text-center text-gray-800">اختيار نوع المنحة السياحية</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div onclick="startFlow('individual')" class="bg-white p-10 rounded-[3rem] border-2 border-transparent hover:border-blue-600 cursor-pointer shadow-lg hover:shadow-2xl transition-all flex flex-col items-center group">
+                        <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all"><i data-lucide="user" class="w-8 h-8"></i></div>
+                        <span class="text-xl font-black text-gray-700">منحة فردية</span>
+                    </div>
+                    <div onclick="startFlow('family')" class="bg-white p-10 rounded-[3rem] border-2 border-transparent hover:border-green-600 cursor-pointer shadow-lg hover:shadow-2xl transition-all flex flex-col items-center group">
+                        <div class="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition-all"><i data-lucide="users" class="w-8 h-8"></i></div>
+                        <span class="text-xl font-black text-gray-700">منحة عائلية</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 2: DATA -->
+            <div id="page-2" class="page page-hidden space-y-8">
+                <h2 class="text-xl font-bold border-r-4 border-blue-600 pr-3">رفع جوازات السفر</h2>
+                <div id="upload-list" class="space-y-4"></div>
+                
+                <div id="crossing-box" class="hidden bg-white p-8 rounded-[2rem] border shadow-sm space-y-6 animate-in slide-in-from-bottom duration-500">
+                    <h3 class="font-bold text-blue-900 flex items-center gap-2 text-lg"><i data-lucide="map-pin"></i> خطة العبور</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <select id="cross-type" onchange="updatePoints()" class="p-4 border rounded-2xl outline-none bg-gray-50 text-sm font-bold">
+                            <option value="">نوع المعبر</option>
+                            <option value="air">جوي</option>
+                            <option value="sea">بحري</option>
+                            <option value="land">بري</option>
+                        </select>
+                        <select id="cross-point" disabled class="p-4 border rounded-2xl outline-none bg-gray-50 text-sm font-bold">
+                            <option value="">-- المعبر المحدد --</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="btn-to-3" disabled onclick="validateTo3()" class="w-full py-5 bg-blue-600 text-white rounded-[2rem] font-black shadow-xl disabled:opacity-30">تأكيد البيانات والانتقال</button>
+            </div>
+
+            <!-- PAGE 3: PAYMENT LIST -->
+            <div id="page-3" class="page page-hidden space-y-6">
+                <div class="bg-blue-50 p-6 rounded-[2.5rem] border border-blue-100 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-black text-blue-900">إتمام الدفع وتحميل الوصولات</h2>
+                        <p class="text-[10px] text-blue-600 font-bold uppercase italic">دفع مستقل لكل فرد لضمان الوصل الفردي</p>
+                    </div>
+                    <i data-lucide="wallet-cards" class="text-blue-200 w-12 h-12"></i>
+                </div>
+                
+                <div id="members-list-ui" class="space-y-4"></div>
+                <button onclick="location.reload()" class="w-full py-4 text-gray-400 font-bold hover:text-red-500 transition-colors">العودة للرئيسية</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: PAYMENT METHOD -->
+    <div id="method-modal" class="page-hidden fixed inset-0 bg-black/70 z-[100] flex items-center justify-center no-print px-4">
+        <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 space-y-6 shadow-2xl animate-in zoom-in duration-300">
+            <h3 class="text-center font-black text-2xl text-gray-800">اختر وسيلة الدفع</h3>
+            <div class="grid grid-cols-1 gap-4">
+                <button onclick="openGate('dahabia')" class="flex items-center justify-between p-6 border-2 rounded-3xl hover:border-yellow-400 hover:bg-yellow-50 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-yellow-400 text-blue-900 rounded-full flex items-center justify-center font-black italic">D</div>
+                        <span class="font-bold text-lg">البطاقة الذهبية</span>
+                    </div>
+                    <i data-lucide="chevron-left" class="group-hover:translate-x-[-5px] transition-all"></i>
+                </button>
+                <button onclick="openGate('cib')" class="flex items-center justify-between p-6 border-2 rounded-3xl hover:border-blue-600 hover:bg-blue-50 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-800 text-white rounded-full flex items-center justify-center font-black italic">CIB</div>
+                        <span class="font-bold text-lg">بطاقة CIB</span>
+                    </div>
+                    <i data-lucide="chevron-left" class="group-hover:translate-x-[-5px] transition-all"></i>
+                </button>
+            </div>
+            <button onclick="closeModal()" class="w-full text-sm text-gray-400 font-bold">تراجع</button>
+        </div>
+    </div>
+
+    <!-- GATEWAY: DAHABIA -->
+    <div id="gate-dahabia" class="page-hidden fixed inset-0 bg-gray-100 z-[110] overflow-y-auto no-print">
+        <div class="max-w-md mx-auto my-10 bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <div class="bg-blue-900 p-8 text-white text-center">
+                <h3 class="font-black text-xl italic">EDAHABIA - ALGERIE POSTE</h3>
+                <p class="text-[10px] opacity-60">نظام الدفع الإلكتروني بريد الجزائر</p>
+            </div>
+            <div class="p-10 space-y-6">
+                <div class="flex justify-between border-b pb-2"><span class="text-xs text-gray-400">المستفيد:</span><span id="gd-name" class="font-bold"></span></div>
+                <div class="space-y-4">
+                    <input type="text" id="gd-card" placeholder="6073 XXXX XXXX XXXX" maxlength="16" class="w-full p-5 border-2 rounded-2xl text-center font-mono text-xl focus:border-yellow-400 outline-none">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" placeholder="MM/YY" class="p-5 border-2 rounded-2xl text-center">
+                        <input type="password" placeholder="CVV" class="p-5 border-2 rounded-2xl text-center">
+                    </div>
+                </div>
+                <button onclick="processFinalPay('dahabia')" class="w-full py-5 bg-yellow-400 text-blue-900 font-black rounded-2xl text-xl shadow-xl">تأكيد الدفع (VALIDER)</button>
+                <button onclick="closeGate()" class="w-full text-xs text-gray-400 font-bold mt-2">رجوع</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GATEWAY: CIB -->
+    <div id="gate-cib" class="page-hidden fixed inset-0 bg-gray-50 z-[110] overflow-y-auto no-print">
+        <div class="max-w-md mx-auto my-10 bg-white rounded-3xl shadow-2xl overflow-hidden border-t-8 border-blue-800">
+            <div class="bg-blue-800 p-8 text-white text-center">
+                <h3 class="font-black text-2xl italic">SATIM - CIB</h3>
+                <p class="text-[9px] opacity-60 uppercase tracking-widest">Electronic Payment Gateway</p>
+            </div>
+            <div class="p-10 space-y-6">
+                <div class="bg-blue-50 p-5 rounded-2xl flex justify-between items-center"><span class="text-xs font-bold text-blue-800 uppercase">Amount:</span><span id="gc-amt" class="font-black text-blue-900 text-2xl"></span></div>
+                <input type="text" id="gc-card" placeholder="XXXX XXXX XXXX XXXX" maxlength="16" class="w-full p-5 border-2 rounded-2xl font-mono text-center text-lg">
+                <button onclick="processFinalPay('cib')" class="w-full py-5 bg-blue-800 text-white font-black rounded-2xl text-xl shadow-xl">CONFIRMER</button>
+                <button onclick="closeGate()" class="w-full text-[10px] text-gray-400 font-bold uppercase mt-4">ANNULER</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADER -->
+    <div id="loader" class="page-hidden fixed inset-0 bg-white/95 z-[200] flex flex-col items-center justify-center">
+        <div class="spinner mb-4"></div>
+        <p id="loader-txt" class="font-black text-blue-900 text-lg">جاري معالجة العملية...</p>
+    </div>
+
+    <!-- RECEIPT TEMPLATE (Hidden) -->
+    <div id="receipt-box" class="page-hidden no-print">
+        <div class="receipt-container" id="printable-area">
+            <div class="official-seal">BANQUE D'ALGERIE</div>
+            <div class="flex justify-between items-start border-b-4 border-blue-900 pb-4 mb-8">
+                <div class="text-[11px] font-bold">الجمهورية الجزائرية الديمقراطية الشعبية<br>وزارة المالية - بنك الجزائر</div>
+                <div class="text-center"><h2 class="text-2xl font-black text-blue-900">وصل منحة السفر</h2><p class="text-[8px] font-bold tracking-[0.2em] uppercase mt-1">Official Receipt</p></div>
+                <div class="text-[11px] font-bold text-left italic">Document Sécurisé</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 text-[11px] mb-8 bg-gray-50 p-6 rounded-[2rem] border">
+                <p><b>رقم العملية:</b> <span id="r-ref"></span></p>
+                <p class="text-left"><b>تاريخ الصدور:</b> <span id="r-date"></span></p>
+                <p><b>تاريخ الخروج:</b> <span id="r-out" class="text-green-700 font-bold"></span></p>
+                <p class="text-left"><b>تاريخ العودة:</b> <span id="r-in" class="text-red-700 font-bold"></span></p>
+                <p><b>معبر الوجهة:</b> <span id="r-point" class="font-bold underline"></span></p>
+                <p class="text-left"><b>طريقة الدفع:</b> <span id="r-method" class="font-bold"></span></p>
+            </div>
+
+            <div class="mb-10">
+                <h4 class="text-sm font-black text-blue-900 mb-5 border-r-4 border-blue-900 pr-4">بيانات المستفيد (تلقائي):</h4>
+                <div class="grid grid-cols-2 gap-y-6 text-[13px] p-10 border-2 border-dashed rounded-[3rem] bg-white shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-2 h-full bg-yellow-400"></div>
+                    <p><b>الاسم الكامل:</b> <span id="r-name" class="font-bold"></span></p>
+                    <p><b>رقم جواز السفر:</b> <span id="r-pass" class="font-mono font-black"></span></p>
+                    <p><b>تاريخ الانتهاء:</b> <span id="r-expiry"></span></p>
+                    <p><b>الجنسية:</b> <span id="r-nation">جزائرية (ALGERIAN)</span></p>
+                    <p><b>العمر المستخرج:</b> <span id="r-age"></span> سنة</p>
+                    <p class="text-blue-900 text-2xl mt-4"><b>قيمة العملة الصعبة:</b> <span id="r-eur" class="font-black underline decoration-yellow-400"></span> €</p>
+                </div>
+            </div>
+
+            <div class="bg-blue-900 text-white p-8 rounded-[2rem] flex justify-between items-center mb-10 shadow-2xl">
+                <div><p class="text-[11px] opacity-70 uppercase tracking-widest font-bold">Total Paid (DZD)</p><h3 id="r-dzd" class="text-4xl font-black text-yellow-400"></h3></div>
+                <div class="text-left border-r-2 pr-8 border-white/20"><p class="text-[11px] opacity-70">Taux</p><p class="font-bold text-xl">1€ = 160.00 DA</p></div>
+            </div>
+
+            <div class="flex justify-between items-end mt-16">
+                <div class="flex flex-col items-center"><div id="barcode-area" class="barcode-lines mb-2"></div><span id="barcode-txt" class="text-[11px] font-mono font-bold tracking-[0.5em] text-gray-500"></span></div>
+                <div class="text-center"><i data-lucide="qr-code" class="w-16 h-16 opacity-30 mx-auto mb-2"></i><p class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">Banque d'Algérie</p></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let appType = '';
+        let membersData = [];
+        let currentActiveId = null;
+        const BANK_RATE = 160.00;
+        const FEE_BASE = 1190;
+        const CROSS_POINTS = {
+            air: ["مطار هواري بومدين", "مطار أحمد بن بلة (وهران)", "مطار محمد بوضياف (قسنطينة)"],
+            sea: ["ميناء الجزائر العاصمة", "ميناء وهران", "ميناء بجاية"],
+            land: ["معبر أم الطبول", "معبر طالب العربي", "معبر بوشبكة"]
+        };
+
+        // Initialize icons
+        window.onload = () => { lucide.createIcons(); };
+
+        function enterApp() {
+            document.getElementById('welcome-screen').classList.add('screen-hidden');
+            document.getElementById('main-app').classList.remove('page-hidden');
+            lucide.createIcons();
+        }
+
+        function startFlow(type) {
+            appType = type;
+            renderUploadList();
+            showPage(2);
+        }
+
+        function showPage(n) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('page-hidden'));
+            document.getElementById(`page-${n}`).classList.remove('page-hidden');
+            
+            // Stepper
+            if(n === 2) document.getElementById('step-2').classList.add('text-blue-600', 'font-bold');
+            if(n === 3) {
+                document.getElementById('step-3').classList.add('text-blue-600', 'font-bold');
+                document.getElementById('step-2').classList.replace('text-blue-600', 'text-green-600');
+            }
+            window.scrollTo(0,0);
+        }
+
+        function renderUploadList() {
+            const list = document.getElementById('upload-list');
+            list.innerHTML = '';
+            const count = appType === 'individual' ? [{id:0, lbl:'المسافر الرئيسي'}] : 
+                [{id:0, lbl:'الأب'}, {id:1, lbl:'الأم'}, {id:2, lbl:'الابن 1'}, {id:3, lbl:'الابن 2'}];
+            
+            count.forEach(c => {
+                const div = document.createElement('div');
+                div.className = "bg-white p-6 rounded-[2.5rem] border shadow-sm flex justify-between items-center";
+                div.innerHTML = `
+                    <div class="flex items-center gap-5">
+                        <div class="w-14 h-14 bg-blue-50 text-blue-400 rounded-3xl flex items-center justify-center"><i data-lucide="scan"></i></div>
+                        <div><p class="font-black text-gray-800 text-lg">${c.lbl}</p><p id="st-${c.id}" class="text-[11px] text-gray-400 font-bold italic">ارفع جواز السفر</p></div>
+                    </div>
+                    <label class="bg-blue-600 text-white px-7 py-3 rounded-[1.5rem] text-xs font-black cursor-pointer shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">
+                        رفع <input type="file" class="hidden" onchange="processOcr(${c.id}, '${c.lbl}')">
+                    </label>
+                `;
+                list.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        function processOcr(id, lbl) {
+            const st = document.getElementById(`st-${id}`);
+            st.innerHTML = '<span class="flex items-center gap-2">جاري المعالجة... <div class="spinner"></div></span>';
+            setTimeout(() => {
+                const age = (id >= 2) ? 12 : 45;
+                const pNum = "DZ" + Math.floor(1000000 + Math.random() * 9000000);
+                const eur = age >= 19 ? 750 : 300;
+                membersData[id] = { id, label:lbl, name: lbl + " فلان", pass:pNum, age, expiry:"12/05/2032", amount:eur, isPaid:false, method:'' };
+                st.innerText = "تم التحقق: " + pNum;
+                st.className = "text-[11px] text-green-600 font-black";
+                
+                const needed = appType === 'individual' ? 1 : 4;
+                if(membersData.filter(m => m).length === needed) {
+                    document.getElementById('crossing-box').classList.remove('hidden');
+                    document.getElementById('btn-to-3').disabled = false;
+                }
+            }, 1000);
+        }
+
+        function updatePoints() {
+            const t = document.getElementById('cross-type').value;
+            const p = document.getElementById('cross-point');
+            p.innerHTML = '<option value="">-- المعبر المحدد --</option>';
+            if(t && CROSS_POINTS[t]) { p.disabled = false; CROSS_POINTS[t].forEach(pt => p.innerHTML += `<option value="${pt}">${pt}</option>`); }
+            else p.disabled = true;
+        }
+
+        function validateTo3() {
+            if(!document.getElementById('cross-point').value) return alert("يرجى اختيار المعبر المفضل");
+            showPage(3);
+            renderMembersList();
+        }
+
+        function renderMembersList() {
+            const list = document.getElementById('members-list-ui');
+            list.innerHTML = '';
+            membersData.forEach((m, idx) => {
+                const totalDa = (m.amount * BANK_RATE) + FEE_BASE;
+                const card = document.createElement('div');
+                card.className = `p-8 rounded-[2.5rem] border-2 flex flex-col md:flex-row justify-between items-center gap-6 transition-all ${m.isPaid ? 'bg-green-50 border-green-200 shadow-inner' : 'bg-white border-gray-100 shadow-md'}`;
+                card.innerHTML = `
+                    <div class="flex-1 text-center md:text-right">
+                        <div class="flex items-center justify-center md:justify-start gap-3 mb-2">
+                            <span class="font-black text-gray-800 text-xl">${m.name}</span>
+                            ${m.isPaid ? '<span class="bg-green-600 text-white text-[10px] px-4 py-1 rounded-full font-black flex items-center gap-1 shadow-sm"><i data-lucide="check" class="w-3 h-3"></i> مدفوع</span>' : ''}
+                        </div>
+                        <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">Pass: ${m.pass} | Grant: <b class="text-blue-700 font-black">${m.amount}€</b></p>
+                        <p class="text-2xl font-black mt-3 text-gray-900">${totalDa.toLocaleString()} <span class="text-xs opacity-50">DZD</span></p>
+                    </div>
+                    <div class="flex gap-2">
+                        ${!m.isPaid ? 
+                            `<button onclick="openMethodModal(${idx})" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-sm shadow-xl shadow-blue-100 hover:bg-blue-700 active:scale-95 transition-all">دفع الرسوم</button>` :
+                            `<button onclick="downloadReceipt(${idx})" class="bg-gray-800 text-white px-8 py-4 rounded-2xl font-black text-sm flex items-center gap-2 hover:bg-black transition-all shadow-lg"><i data-lucide="download" class="w-4 h-4"></i> تحميل الوصل</button>`
+                        }
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function openMethodModal(id) { 
+            currentActiveId = id; 
+            document.getElementById('method-modal').classList.remove('page-hidden'); 
+        }
+
+        function closeModal() { document.getElementById('method-modal').classList.add('page-hidden'); }
+
+        function openGate(type) {
+            closeModal();
+            const m = membersData[currentActiveId];
+            m.method = type;
+            if(type === 'dahabia') {
+                document.getElementById('gd-name').innerText = m.name;
+                document.getElementById('gate-dahabia').classList.remove('page-hidden');
+            } else {
+                document.getElementById('gc-amt').innerText = ((m.amount * BANK_RATE) + FEE_BASE).toLocaleString() + " DZD";
+                document.getElementById('gate-cib').classList.remove('page-hidden');
+            }
+        }
+
+        function closeGate() { 
+            document.getElementById('gate-dahabia').classList.add('page-hidden'); 
+            document.getElementById('gate-cib').classList.add('page-hidden'); 
+        }
+
+        function processFinalPay(type) {
+            const cardVal = document.getElementById(`g${type === 'dahabia' ? 'd' : 'c'}-card`).value;
+            if(cardVal.length < 16) return alert("يرجى إدخال رقم البطاقة (16 رقم)");
+            
+            toggleLoader(true, "جاري معالجة المعاملة البنكية الآمنة...");
+            setTimeout(() => {
+                membersData[currentActiveId].isPaid = true;
+                toggleLoader(false);
+                closeGate();
+                renderMembersList();
+            }, 2000);
+        }
+
+        function downloadReceipt(id) {
+            const m = membersData[id];
+            const ref = "BA-" + Math.floor(Math.random()*900000+100000);
+            
+            document.getElementById('r-ref').innerText = ref;
+            document.getElementById('r-ref-top').innerText = ref;
+            document.getElementById('r-name').innerText = m.name;
+            document.getElementById('r-pass').innerText = m.pass;
+            document.getElementById('r-age').innerText = m.age;
+            document.getElementById('r-expiry').innerText = m.expiry;
+            document.getElementById('r-eur').innerText = m.amount;
+            document.getElementById('r-dzd').innerText = ((m.amount * BANK_RATE) + FEE_BASE).toLocaleString() + " دج";
+            document.getElementById('r-point').innerText = document.getElementById('cross-point').value;
+            document.getElementById('r-method').innerText = m.method === 'dahabia' ? "البطاقة الذهبية" : "بطاقة CIB";
+            
+            const now = new Date();
+            const future = new Date(); future.setDate(now.getDate() + 7);
+            document.getElementById('r-date').innerText = now.toLocaleString('ar-DZ');
+            document.getElementById('r-out').innerText = now.toLocaleDateString('ar-DZ');
+            document.getElementById('r-in').innerText = future.toLocaleDateString('ar-DZ');
+            
+            const b = document.getElementById('barcode-area');
+            b.innerHTML = Array(35).fill().map(() => `<div class="bar ${Math.random()>0.5?'w':''}"></div><div class="bar s"></div>`).join('');
+            document.getElementById('barcode-txt').innerText = m.pass;
+
+            html2pdf().set({ margin:0, filename:`Confirmation_BA_${m.pass}.pdf`, image:{type:'jpeg', quality:1}, html2canvas:{scale:3}, jsPDF:{unit:'mm', format:'a4'} }).from(document.getElementById('printable-area')).save();
+        }
+
+        function toggleLoader(show, txt = "") { 
+            const l = document.getElementById('loader');
+            if(show) {
+                document.getElementById('loader-txt').innerText = txt;
+                l.classList.remove('page-hidden');
+            } else {
+                l.classList.add('page-hidden');
+            }
+        }
+    </script>
 </body>
 </html>
